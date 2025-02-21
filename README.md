@@ -6,6 +6,7 @@ This module is a team project for the Computer Science course at City University
 - Pedro Menezes Da Silva (Pedro.Menezes-Da-Silva@city.ac.uk)
 - Pheonix Meo (phoenix.moe@city.ac.uk)
 - Umer Malik (umer.malik@city.ac.uk)
+- Zakaria.Chabane@city.ac.uk
 
 ## Name 
 The name every team member have voted is `nullptr`
@@ -15,7 +16,7 @@ The roles within a team are:
 - Team Leader: Filippo Vicini
 - Deputy Team Leader: Amaan Ali
 - System Analyst: Pheonix Meo
-- System Designer: Amaan Ali
+- System Designer: Amaan Ali / Zakaria Chabane
 - Developer: Brian Poule / Filippo Vicini
 - Tester: Pedro Menezes Da Silva / Umer Malik
 
