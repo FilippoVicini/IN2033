@@ -14,7 +14,7 @@ The name every team member have voted is `nullptr`
 ## Roles 
 The roles within a team are: 
 - Team Leader: Filippo Vicini
-- Deputy Team Leader: Amaan Ali
+- Deputy Team Leader: Amaan Ali / Phoenix Moe
 - System Analyst: Pheonix Meo
 - System Designer: Amaan Ali / Zakaria Chabane
 - Developer: Brian Poule / Filippo Vicini
