@@ -1,0 +1,6 @@
+com.example
+com.lancaster
+com.lancaster.database
+com.lancaster.database.BoxOfficeInterface
+com.lancaster.database.OperationsInterface
+com.lancaster.gui

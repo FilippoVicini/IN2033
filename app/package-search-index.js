@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example"},{"l":"com.lancaster"},{"l":"com.lancaster.database"},{"l":"com.lancaster.database.BoxOfficeInterface"},{"l":"com.lancaster.database.OperationsInterface"},{"l":"com.lancaster.gui"}];updateSearchResults();
