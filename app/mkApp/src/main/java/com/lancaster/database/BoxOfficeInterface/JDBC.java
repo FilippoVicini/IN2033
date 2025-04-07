@@ -29,4 +29,12 @@ public class JDBC {
     public List<Films.FilmInformation> getFilmSchedule(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
         return boxOfficeData.getFilmSchedule(startDate,endDate,connection);
     }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+
+        System.out.println("Hello from marketing");
+        com.lancaster.database.OperationsInterface.JDBC jdbc = new com.lancaster.database.OperationsInterface.JDBC();
+
+
+    }
 }

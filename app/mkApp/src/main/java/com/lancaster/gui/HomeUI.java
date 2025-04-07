@@ -15,6 +15,7 @@ import com.lancaster.database.myJDBC;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import com.lancaster.gui.ClientsUI;
 
 public class HomeUI extends JFrame {
 
@@ -43,12 +44,12 @@ public class HomeUI extends JFrame {
             "Tour Bookings",
             "Meeting Bookings",
             "Film Shows",
-            "Friends",
             "Films",
             "Marketing Events",
-            "Held Seats", // Added the new menu item
+            "Held Seats",
             "Calendar",
             "Invoices",
+            "Clients",
             "Settings"
     };
 
@@ -236,9 +237,7 @@ public class HomeUI extends JFrame {
             case "Dashboard":
                 contentPanel.add(dashboardPanel, BorderLayout.CENTER);
                 break;
-            case "Friends":
-                contentPanel.add(friendsUI, BorderLayout.CENTER);
-                break;
+
             case "Films":
                 contentPanel.add(filmsUI, BorderLayout.CENTER);
                 break;
@@ -263,8 +262,11 @@ public class HomeUI extends JFrame {
             case "Invoices":
                 contentPanel.add(new InvoiceUI(), BorderLayout.CENTER);
                 break;
-            case "Held Seats": // Added case for Held Seats
+            case "Held Seats":
                 contentPanel.add(heldSeatsUI, BorderLayout.CENTER);
+                break;
+            case "Clients":
+                contentPanel.add(new ClientsUI(), BorderLayout.CENTER);
                 break;
         }
 

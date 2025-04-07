@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="mkApp:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/mkApp_jar2</output-path>
+    <root id="archive" name="mkApp.jar">
+      <element id="module-output" name="mkApp" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/github/cdimascio/dotenv-java/3.0.0/dotenv-java-3.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/operations/StriversOperations/1.0.0/StriversOperations-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/protobuf/protobuf-java/3.21.9/protobuf-java-3.21.9.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
