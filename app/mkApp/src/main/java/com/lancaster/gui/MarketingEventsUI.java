@@ -11,30 +11,34 @@ import java.text.SimpleDateFormat;
 
 import com.lancaster.database.myJDBC;
 
+/**
+ * UI panel for displaying and managing marketing events.
+ * Provides functionality for viewing, searching, and deleting events.
+ */
 public class MarketingEventsUI extends JPanel {
     private JTable eventsTable;
     private DefaultTableModel tableModel;
     private JLabel statusLabel;
     private JTextField searchField;
 
-    // Colors to match TourBookingsUI
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
     private Color backgroundColor = new Color(245, 246, 250);
 
+    /**
+     * Constructs the MarketingEventsUI panel with table and controls.
+     */
     public MarketingEventsUI() {
 
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -49,11 +53,9 @@ public class MarketingEventsUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -65,14 +67,13 @@ public class MarketingEventsUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         styleButton(searchButton, highlightColor);
-        searchButton.setForeground(Color.BLACK); // Make text black
+        searchButton.setForeground(Color.BLACK);
         searchButton.addActionListener(e -> searchEvents());
 
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -82,20 +83,17 @@ public class MarketingEventsUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model
         String[] columns = {"Event ID", "Type", "Name", "Start Date", "End Date", "Room", "People", "Venue"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
         };
 
-        // Create table
         eventsTable = new JTable(tableModel);
         styleTable(eventsTable);
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(eventsTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -103,24 +101,22 @@ public class MarketingEventsUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
         JButton refreshButton = new JButton("Refresh");
         styleButton(refreshButton, Color.BLACK);
-        refreshButton.setForeground(Color.BLACK); // Make text black
+        refreshButton.setForeground(Color.BLACK);
         refreshButton.addActionListener(e -> loadMarketingEventsData());
 
         JButton fetchEventsButton = new JButton("Fetch New Events");
         styleButton(fetchEventsButton, Color.BLACK);
-        fetchEventsButton.setForeground(Color.BLACK); // Make text black
+        fetchEventsButton.setForeground(Color.BLACK);
         fetchEventsButton.addActionListener(e -> fetchAndInsertEvents());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(fetchEventsButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -128,7 +124,6 @@ public class MarketingEventsUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -141,21 +136,22 @@ public class MarketingEventsUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add right-click context menu
         addTableContextMenu();
 
         loadMarketingEventsData();
     }
 
+    /**
+     * Applies styling to the table component.
+     * @param table The table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -168,7 +164,6 @@ public class MarketingEventsUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -177,16 +172,20 @@ public class MarketingEventsUI extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)));
     }
 
+    /**
+     * Applies consistent styling to buttons.
+     * @param button The button to style
+     * @param color The background color for the button
+     */
     private void styleButton(JButton button, Color color) {
         button.setBackground(color);
-        button.setForeground(Color.WHITE); // Default color, will be overridden for specific buttons
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -202,6 +201,9 @@ public class MarketingEventsUI extends JPanel {
         });
     }
 
+    /**
+     * Searches for events based on the text in the search field.
+     */
     private void searchEvents() {
         String searchTerm = searchField.getText().trim();
         if (searchTerm.isEmpty()) {
@@ -268,6 +270,9 @@ public class MarketingEventsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Adds a context menu to the events table.
+     */
     private void addTableContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
 
@@ -304,8 +309,12 @@ public class MarketingEventsUI extends JPanel {
         eventsTable.setComponentPopupMenu(contextMenu);
     }
 
+    /**
+     * Displays detailed information about a selected event.
+     * @param eventId ID of the event to view
+     * @param eventName Name of the event to view
+     */
     private void viewEventDetails(int eventId, String eventName) {
-        // Create styled details panel
         JPanel detailsPanel = new JPanel();
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -334,10 +343,15 @@ public class MarketingEventsUI extends JPanel {
             e.printStackTrace();
         }
 
-        // Show details in a dialog
         JOptionPane.showMessageDialog(this, detailsPanel, "Event Details: " + eventName, JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Adds a row with label and value to the details panel.
+     * @param panel The panel to add the row to
+     * @param label The label text
+     * @param value The value text
+     */
     private void addDetailRow(JPanel panel, String label, String value) {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
@@ -355,8 +369,12 @@ public class MarketingEventsUI extends JPanel {
         panel.add(Box.createVerticalStrut(5));
     }
 
+    /**
+     * Deletes an event after confirmation.
+     * @param eventId ID of the event to delete
+     * @param eventName Name of the event to delete
+     */
     private void deleteEvent(int eventId, String eventName) {
-        // Create a styled confirmation dialog
         JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
         confirmPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -394,6 +412,9 @@ public class MarketingEventsUI extends JPanel {
         }
     }
 
+    /**
+     * Loads marketing events data from the database.
+     */
     private void loadMarketingEventsData() {
         statusLabel.setText("Loading data...");
         statusLabel.setForeground(accentColor);
@@ -403,10 +424,8 @@ public class MarketingEventsUI extends JPanel {
             protected Void doInBackground() {
                 try (Connection connection = myJDBC.getConnection()) {
                     if (connection != null) {
-                        // Clear existing data
                         tableModel.setRowCount(0);
 
-                        // Fetch data from marketing_events
                         String query = "SELECT * FROM marketing_events";
                         Statement stmt = connection.createStatement();
                         ResultSet rs = stmt.executeQuery(query);
@@ -446,6 +465,9 @@ public class MarketingEventsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Fetches events from other booking tables and adds them to marketing events.
+     */
     private void fetchAndInsertEvents() {
         statusLabel.setText("Fetching events...");
         statusLabel.setForeground(accentColor);
@@ -457,25 +479,21 @@ public class MarketingEventsUI extends JPanel {
 
                 try (Connection connection = myJDBC.getConnection()) {
                     if (connection != null) {
-                        // Fetch from film_bookings
                         String filmQuery = "SELECT 'Film' AS type, filmTitle AS name, showDate AS startDate, endDate, room, duration AS peopleNum, venue FROM film_bookings";
                         Statement filmStmt = connection.createStatement();
                         ResultSet filmRs = filmStmt.executeQuery(filmQuery);
                         insertedCount += insertEvents(filmRs, connection);
 
-                        // Fetch from group_bookings
                         String groupQuery = "SELECT 'Group' AS type, event AS name, startDate, endDate, room, people AS peopleNum, venue FROM group_bookings";
                         Statement groupStmt = connection.createStatement();
                         ResultSet groupRs = groupStmt.executeQuery(groupQuery);
                         insertedCount += insertEvents(groupRs, connection);
 
-                        // Fetch from meeting_bookings
                         String meetingQuery = "SELECT 'Meeting' AS type, meetingName AS name, startDate, endDate, room, peopleNum, venue FROM meeting_bookings";
                         Statement meetingStmt = connection.createStatement();
                         ResultSet meetingRs = meetingStmt.executeQuery(meetingQuery);
                         insertedCount += insertEvents(meetingRs, connection);
 
-                        // Fetch from tour_bookings
                         String tourQuery = "SELECT 'Tour' AS type, organizationName AS name, startDate, endDate, room, people AS peopleNum, venue FROM tour_bookings";
                         Statement tourStmt = connection.createStatement();
                         ResultSet tourRs = tourStmt.executeQuery(tourQuery);
@@ -499,7 +517,7 @@ public class MarketingEventsUI extends JPanel {
                         statusLabel.setText("No new events to add");
                         statusLabel.setForeground(accentColor);
                     }
-                    loadMarketingEventsData(); // Refresh the table data
+                    loadMarketingEventsData();
                 } catch (Exception e) {
                     statusLabel.setText("Error fetching events: " + e.getMessage());
                     statusLabel.setForeground(new Color(231, 76, 60));
@@ -510,6 +528,12 @@ public class MarketingEventsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Inserts events from a result set into the marketing_events table.
+     * @param rs Result set containing event data
+     * @param connection Database connection
+     * @return Number of events inserted
+     */
     private int insertEvents(ResultSet rs, Connection connection) throws Exception {
         String insertQuery = "INSERT INTO marketing_events (type, name, startDate, endDate, room, peopleNum, venue) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String checkQuery = "SELECT COUNT(*) FROM marketing_events WHERE type = ? AND name = ? AND startDate = ? AND endDate = ? AND room = ? AND peopleNum = ? AND venue = ?";
@@ -527,12 +551,10 @@ public class MarketingEventsUI extends JPanel {
                 int peopleNum = rs.getInt("peopleNum");
                 String venue = rs.getString("venue");
 
-                // Skip if any required field is null
                 if (type == null || name == null || startDate == null || endDate == null || venue == null) {
                     continue;
                 }
 
-                // Check for duplicates
                 checkStmt.setString(1, type);
                 checkStmt.setString(2, name);
                 checkStmt.setTimestamp(3, startDate);

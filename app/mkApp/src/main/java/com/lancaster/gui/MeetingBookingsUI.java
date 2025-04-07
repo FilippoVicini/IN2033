@@ -13,29 +13,33 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import com.lancaster.database.myJDBC;
 
+/**
+ * UI panel for displaying and managing meeting bookings.
+ * Provides functionality for viewing, searching, and creating meeting bookings.
+ */
 public class MeetingBookingsUI extends JPanel {
     private JTable bookingsTable;
     private DefaultTableModel tableModel;
     private JLabel statusLabel;
     private JTextField searchField;
 
-    // Colors to match TourBookingsUI
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
     private Color backgroundColor = new Color(245, 246, 250);
 
+    /**
+     * Constructs the MeetingBookingsUI panel with table and controls.
+     */
     public MeetingBookingsUI() {
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -50,11 +54,9 @@ public class MeetingBookingsUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -65,14 +67,13 @@ public class MeetingBookingsUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         styleButton(searchButton, highlightColor);
-        searchButton.setForeground(Color.BLACK); // Make text black
+        searchButton.setForeground(Color.BLACK);
         searchButton.addActionListener(e -> searchBookings(searchField.getText()));
 
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -82,20 +83,17 @@ public class MeetingBookingsUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model
         String[] columns = {"ID", "Meeting Name", "Room Name", "Start Date", "End Date", "People", "Room", "Venue"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
         };
 
-        // Create table
         bookingsTable = new JTable(tableModel);
         styleTable(bookingsTable);
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(bookingsTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -103,24 +101,22 @@ public class MeetingBookingsUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
         JButton refreshButton = new JButton("Refresh");
         styleButton(refreshButton, Color.BLACK);
-        refreshButton.setForeground(Color.BLACK); // Make text black
+        refreshButton.setForeground(Color.BLACK);
         refreshButton.addActionListener(e -> loadMeetingBookingsData());
 
         JButton newBookingButton = new JButton("New Booking");
         styleButton(newBookingButton, Color.BLACK);
-        newBookingButton.setForeground(Color.BLACK); // Make text black
+        newBookingButton.setForeground(Color.BLACK);
         newBookingButton.addActionListener(e -> createNewBooking());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(newBookingButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -128,7 +124,6 @@ public class MeetingBookingsUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -141,11 +136,9 @@ public class MeetingBookingsUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
@@ -153,6 +146,10 @@ public class MeetingBookingsUI extends JPanel {
         loadMeetingBookingsData();
     }
 
+    /**
+     * Applies styling to the table component.
+     * @param table The table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -165,7 +162,6 @@ public class MeetingBookingsUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -174,16 +170,20 @@ public class MeetingBookingsUI extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)));
     }
 
+    /**
+     * Applies consistent styling to buttons.
+     * @param button The button to style
+     * @param color The background color for the button
+     */
     private void styleButton(JButton button, Color color) {
         button.setBackground(color);
-        button.setForeground(Color.WHITE); // Default color, will be overridden for specific buttons
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -199,6 +199,9 @@ public class MeetingBookingsUI extends JPanel {
         });
     }
 
+    /**
+     * Loads meeting booking data from the database into the table.
+     */
     private void loadMeetingBookingsData() {
         statusLabel.setText("Loading data...");
         statusLabel.setForeground(accentColor);
@@ -212,7 +215,7 @@ public class MeetingBookingsUI extends JPanel {
                         Statement dataStmt = connection.createStatement();
                         ResultSet dataRs = dataStmt.executeQuery(dataQuery);
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
 
@@ -250,6 +253,10 @@ public class MeetingBookingsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Searches for bookings based on the provided search term.
+     * @param searchTerm The text to search for in bookings
+     */
     private void searchBookings(String searchTerm) {
         if (searchTerm.isEmpty()) {
             loadMeetingBookingsData();
@@ -276,7 +283,7 @@ public class MeetingBookingsUI extends JPanel {
 
                         ResultSet dataRs = pstmt.executeQuery();
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
 
@@ -314,12 +321,13 @@ public class MeetingBookingsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Opens a dialog for creating a new meeting booking.
+     */
     private void createNewBooking() {
-        // Create dialog for new booking input with improved styling
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Meeting Booking", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -339,50 +347,41 @@ public class MeetingBookingsUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Create form fields with improved styling
-        // Meeting Name field
         addFormField(formPanel, "Meeting Name:", gbc, 0);
         JTextField meetingNameField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(meetingNameField, gbc);
 
-        // Room Name field
         addFormField(formPanel, "Room Name:", gbc, 1);
         JTextField roomNameField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(roomNameField, gbc);
 
-        // Start Date field
         addFormField(formPanel, "Start Date (YYYY-MM-DD HH:MM:SS):", gbc, 2);
         JTextField startDateField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(startDateField, gbc);
 
-        // End Date field
         addFormField(formPanel, "End Date (YYYY-MM-DD HH:MM:SS):", gbc, 3);
         JTextField endDateField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 3;
         formPanel.add(endDateField, gbc);
 
-        // People field
         addFormField(formPanel, "Number of People:", gbc, 4);
         JTextField peopleNumField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 4;
         formPanel.add(peopleNumField, gbc);
 
-        // Room field
         addFormField(formPanel, "Room:", gbc, 5);
         JTextField roomField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 5;
         formPanel.add(roomField, gbc);
 
-        // Venue field
         addFormField(formPanel, "Venue:", gbc, 6);
         JTextField venueField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 6;
         formPanel.add(venueField, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -398,7 +397,6 @@ public class MeetingBookingsUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             try {
-                // Get values from form
                 String meetingName = meetingNameField.getText();
                 String roomName = roomNameField.getText();
                 String startDateStr = startDateField.getText();
@@ -407,7 +405,6 @@ public class MeetingBookingsUI extends JPanel {
                 String room = roomField.getText();
                 String venue = venueField.getText();
 
-                // Validate input fields
                 if (meetingName.isEmpty() || roomName.isEmpty() ||
                         startDateStr.isEmpty() || endDateStr.isEmpty() ||
                         room.isEmpty() || venue.isEmpty()) {
@@ -418,7 +415,6 @@ public class MeetingBookingsUI extends JPanel {
                     return;
                 }
 
-                // Validate timestamp format
                 if (!startDateStr.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}") ||
                         !endDateStr.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")) {
                     JOptionPane.showMessageDialog(dialog,
@@ -428,21 +424,18 @@ public class MeetingBookingsUI extends JPanel {
                     return;
                 }
 
-                // Convert startDateStr and endDateStr to Timestamp
                 java.sql.Timestamp startTimestamp = java.sql.Timestamp.valueOf(startDateStr);
                 java.sql.Timestamp endTimestamp = java.sql.Timestamp.valueOf(endDateStr);
 
-                // Insert new booking into the database
                 insertNewBooking(meetingName, roomName, startTimestamp, endTimestamp, peopleNum, room, venue);
-                loadMeetingBookingsData(); // Refresh the table data
+                loadMeetingBookingsData();
 
-                // Show success message with improved styling
                 JOptionPane.showMessageDialog(dialog,
                         "New meeting booking has been added successfully!",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                dialog.dispose(); // Close the dialog after successful insertion
+                dialog.dispose();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Please enter a valid number for People",
@@ -476,6 +469,13 @@ public class MeetingBookingsUI extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Adds a label to a form field.
+     * @param panel The panel to add the field to
+     * @param labelText The label text
+     * @param gbc GridBagConstraints for layout
+     * @param row Row position in the grid
+     */
     private void addFormField(JPanel panel, String labelText, GridBagConstraints gbc, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
@@ -484,6 +484,10 @@ public class MeetingBookingsUI extends JPanel {
         panel.add(label, gbc);
     }
 
+    /**
+     * Creates a styled text field for input forms.
+     * @return A styled JTextField
+     */
     private JTextField createStyledTextField() {
         JTextField field = new JTextField(20);
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -494,6 +498,17 @@ public class MeetingBookingsUI extends JPanel {
         return field;
     }
 
+    /**
+     * Inserts a new booking into the database.
+     * @param meetingName The name of the meeting
+     * @param roomName The name of the room
+     * @param startTimestamp The start date and time
+     * @param endTimestamp The end date and time
+     * @param peopleNum The number of people
+     * @param room The room identifier
+     * @param venue The venue name
+     * @throws Exception If there's an error during database operation
+     */
     private void insertNewBooking(String meetingName, String roomName, java.sql.Timestamp startTimestamp, java.sql.Timestamp endTimestamp, int peopleNum, String room, String venue) throws Exception {
         String query = "INSERT INTO meeting_bookings (meetingName, roomName, startDate, endDate, peopleNum, room, venue) VALUES (?, ?, ?, ?, ?, ?, ?)";
 

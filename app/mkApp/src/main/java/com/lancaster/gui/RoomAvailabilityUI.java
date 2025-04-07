@@ -27,20 +27,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
+/**
+ * UI panel for displaying and managing room availability.
+ * Provides functionality for viewing room availability by date and time, with filtering options.
+ */
 public class RoomAvailabilityUI extends JPanel {
-    // Modern color scheme (matching CalendarUI)
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);  // Soft blue
-    private static final Color SECONDARY_COLOR = new Color(52, 152, 219); // Lighter blue
-    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250); // Light gray background
-    private static final Color TEXT_COLOR = new Color(52, 58, 64); // Dark gray for text
-    private static final Color ACCENT_COLOR = new Color(46, 204, 113); // Green for events
-    private static final Color HEADER_COLOR = new Color(33, 37, 41); // Dark color for headers
-    private static final Color HOVER_COLOR = new Color(236, 240, 241); // Light hover effect
-    private static final Color BORDER_COLOR = new Color(222, 226, 230); // Light gray for borders
-    private static final Color AVAILABLE_COLOR = new Color(46, 204, 113); // Green for available
-    private static final Color BOOKED_COLOR = new Color(231, 76, 60); // Red for booked
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color SECONDARY_COLOR = new Color(52, 152, 219);
+    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250);
+    private static final Color TEXT_COLOR = new Color(52, 58, 64);
+    private static final Color ACCENT_COLOR = new Color(46, 204, 113);
+    private static final Color HEADER_COLOR = new Color(33, 37, 41);
+    private static final Color HOVER_COLOR = new Color(236, 240, 241);
+    private static final Color BORDER_COLOR = new Color(222, 226, 230);
+    private static final Color AVAILABLE_COLOR = new Color(46, 204, 113);
+    private static final Color BOOKED_COLOR = new Color(231, 76, 60);
 
-    // Modern fonts
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 22);
     private static final Font SUBTITLE_FONT = new Font("Segoe UI", Font.BOLD, 16);
     private static final Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
@@ -54,12 +56,14 @@ public class RoomAvailabilityUI extends JPanel {
     private JComboBox<String> timeSlotFilterComboBox;
     private LocalDate selectedDate;
 
-    // Custom date picker components
     private JComboBox<Integer> dayComboBox;
     private JComboBox<Month> monthComboBox;
     private JComboBox<Integer> yearComboBox;
     private JLabel dateDisplayLabel;
 
+    /**
+     * Constructs the RoomAvailabilityUI panel with all controls and table.
+     */
     public RoomAvailabilityUI() {
         setLayout(new BorderLayout(0, 15));
         setBackground(BACKGROUND_COLOR);
@@ -67,28 +71,27 @@ public class RoomAvailabilityUI extends JPanel {
 
         selectedDate = LocalDate.now();
 
-        // Create header panel with title and date selection
         JPanel headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
 
-        // Create table for availability data
         JPanel tablePanel = createTablePanel();
         add(tablePanel, BorderLayout.CENTER);
 
-        // Create button panel
         JPanel buttonPanel = createButtonPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Initial data load
         loadAvailabilityData();
     }
 
+    /**
+     * Creates the header panel containing title, date picker, and filters.
+     * @return Panel with header elements
+     */
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel(new BorderLayout(0, 15));
         panel.setBackground(BACKGROUND_COLOR);
         panel.setBorder(new EmptyBorder(0, 0, 15, 0));
 
-        // Title section
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -103,11 +106,9 @@ public class RoomAvailabilityUI extends JPanel {
         titlePanel.add(titleLabel);
         panel.add(titlePanel, BorderLayout.NORTH);
 
-        // Controls section (date picker and filters)
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         controlPanel.setOpaque(false);
 
-        // Date selection panel
         JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         datePanel.setOpaque(false);
 
@@ -115,20 +116,17 @@ public class RoomAvailabilityUI extends JPanel {
         dateLabel.setFont(SUBTITLE_FONT);
         dateLabel.setForeground(TEXT_COLOR);
 
-        // Create custom date picker with combo boxes
         JPanel datePicker = createCustomDatePicker();
 
         datePanel.add(dateLabel);
         datePanel.add(datePicker);
 
-        // Display selected date
         dateDisplayLabel = new JLabel();
         dateDisplayLabel.setFont(REGULAR_FONT);
         dateDisplayLabel.setForeground(PRIMARY_COLOR);
         updateDateDisplayLabel();
         datePanel.add(dateDisplayLabel);
 
-        // Room filter
         JPanel roomFilterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         roomFilterPanel.setOpaque(false);
 
@@ -143,7 +141,6 @@ public class RoomAvailabilityUI extends JPanel {
         roomFilterPanel.add(roomLabel);
         roomFilterPanel.add(roomFilterComboBox);
 
-        // Time slot filter
         JPanel timeSlotPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         timeSlotPanel.setOpaque(false);
 
@@ -159,33 +156,32 @@ public class RoomAvailabilityUI extends JPanel {
         timeSlotPanel.add(timeSlotLabel);
         timeSlotPanel.add(timeSlotFilterComboBox);
 
-        // Status label
         statusLabel = new JLabel("Loading availability data...");
         statusLabel.setFont(SMALL_FONT);
         statusLabel.setForeground(SECONDARY_COLOR);
 
-        // Add all controls to panel
         controlPanel.add(datePanel);
         controlPanel.add(roomFilterPanel);
         controlPanel.add(timeSlotPanel);
 
-        // Create status panel
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statusPanel.setOpaque(false);
         statusPanel.add(statusLabel);
 
-        // Add panels to main panel
         panel.add(controlPanel, BorderLayout.CENTER);
         panel.add(statusPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
+    /**
+     * Creates a custom date picker with day, month, and year combo boxes.
+     * @return Panel containing date picker components
+     */
     private JPanel createCustomDatePicker() {
         JPanel datePicker = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         datePicker.setOpaque(false);
 
-        // Day ComboBox
         Integer[] days = new Integer[31];
         for (int i = 0; i < 31; i++) {
             days[i] = i + 1;
@@ -195,13 +191,11 @@ public class RoomAvailabilityUI extends JPanel {
         dayComboBox.setFont(REGULAR_FONT);
         dayComboBox.setPreferredSize(new Dimension(60, 30));
 
-        // Month ComboBox
         monthComboBox = new JComboBox<>(Month.values());
         monthComboBox.setSelectedItem(selectedDate.getMonth());
         monthComboBox.setFont(REGULAR_FONT);
         monthComboBox.setPreferredSize(new Dimension(110, 30));
 
-        // Year ComboBox
         Integer[] years = new Integer[10];
         int currentYear = selectedDate.getYear();
         for (int i = 0; i < 10; i++) {
@@ -212,14 +206,12 @@ public class RoomAvailabilityUI extends JPanel {
         yearComboBox.setFont(REGULAR_FONT);
         yearComboBox.setPreferredSize(new Dimension(80, 30));
 
-        // Add action listeners to update selected date
         ActionListener dateChangeListener = e -> updateSelectedDateFromPicker();
 
         dayComboBox.addActionListener(dateChangeListener);
         monthComboBox.addActionListener(dateChangeListener);
         yearComboBox.addActionListener(dateChangeListener);
 
-        // Add components to panel
         datePicker.add(dayComboBox);
         datePicker.add(monthComboBox);
         datePicker.add(yearComboBox);
@@ -227,13 +219,15 @@ public class RoomAvailabilityUI extends JPanel {
         return datePicker;
     }
 
+    /**
+     * Updates the selected date based on date picker values.
+     */
     private void updateSelectedDateFromPicker() {
         try {
             int day = (Integer) dayComboBox.getSelectedItem();
             Month month = (Month) monthComboBox.getSelectedItem();
             int year = (Integer) yearComboBox.getSelectedItem();
 
-            // Handle days that don't exist in the selected month
             int maxDay = month.length(LocalDate.of(year, month, 1).isLeapYear());
             if (day > maxDay) {
                 day = maxDay;
@@ -248,6 +242,9 @@ public class RoomAvailabilityUI extends JPanel {
         }
     }
 
+    /**
+     * Updates the date display label with formatted selected date.
+     */
     private void updateDateDisplayLabel() {
         String formattedDate = selectedDate.format(
                 DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
@@ -255,12 +252,15 @@ public class RoomAvailabilityUI extends JPanel {
         dateDisplayLabel.setText("(" + formattedDate + ")");
     }
 
+    /**
+     * Creates the panel containing the availability table.
+     * @return Panel with styled table for availability data
+     */
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(new LineBorder(BORDER_COLOR, 1));
 
-        // Create table model with columns
         String[] columns = {"Room", "Time Slot", "Availability", "Event", "Venue", "Duration"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -270,25 +270,21 @@ public class RoomAvailabilityUI extends JPanel {
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 2) { // Availability column
+                if (columnIndex == 2) {
                     return Boolean.class;
                 }
                 return String.class;
             }
         };
 
-        // Create and style table
         availabilityTable = new JTable(tableModel);
         styleTable(availabilityTable);
 
-        // Custom renderer for availability column
         availabilityTable.getColumnModel().getColumn(2).setCellRenderer(new AvailabilityCellRenderer());
 
-        // Add sorting capability
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
         availabilityTable.setRowSorter(sorter);
 
-        // Create scroll pane
         JScrollPane scrollPane = new JScrollPane(availabilityTable);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(Color.WHITE);
@@ -297,6 +293,10 @@ public class RoomAvailabilityUI extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates the button panel with action buttons.
+     * @return Panel with Today and Refresh buttons
+     */
     private JPanel createButtonPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         panel.setOpaque(false);
@@ -320,6 +320,11 @@ public class RoomAvailabilityUI extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates a styled button with consistent appearance.
+     * @param text Text for the button
+     * @return Styled JButton
+     */
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(BUTTON_FONT);
@@ -330,7 +335,6 @@ public class RoomAvailabilityUI extends JPanel {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setPreferredSize(new Dimension(100, 36));
 
-        // Add hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -346,6 +350,10 @@ public class RoomAvailabilityUI extends JPanel {
         return button;
     }
 
+    /**
+     * Applies styling to the availability table.
+     * @param table Table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(REGULAR_FONT);
         table.setRowHeight(40);
@@ -358,7 +366,6 @@ public class RoomAvailabilityUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(SUBTITLE_FONT);
         header.setBackground(PRIMARY_COLOR);
@@ -366,28 +373,29 @@ public class RoomAvailabilityUI extends JPanel {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR));
 
-        // Center align column content
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         for (int i = 0; i < table.getColumnCount(); i++) {
-            if (i != 2) { // Skip the availability column
+            if (i != 2) {
                 table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
         }
 
-        // Set column widths
-        table.getColumnModel().getColumn(0).setPreferredWidth(100); // Room
-        table.getColumnModel().getColumn(1).setPreferredWidth(150); // Time Slot
-        table.getColumnModel().getColumn(2).setPreferredWidth(100); // Availability
-        table.getColumnModel().getColumn(3).setPreferredWidth(200); // Event
-        table.getColumnModel().getColumn(4).setPreferredWidth(150); // Venue
-        table.getColumnModel().getColumn(5).setPreferredWidth(100); // Duration
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(150);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(150);
+        table.getColumnModel().getColumn(5).setPreferredWidth(100);
     }
 
+    /**
+     * Loads availability data for the selected date.
+     */
     private void loadAvailabilityData() {
         statusLabel.setText("Loading availability data...");
-        tableModel.setRowCount(0); // Clear existing data
+        tableModel.setRowCount(0);
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             private List<Object[]> availabilityDataList = new ArrayList<>();
@@ -395,32 +403,26 @@ public class RoomAvailabilityUI extends JPanel {
             @Override
             protected Void doInBackground() {
                 try {
-                    // Create JDBC instance
                     JDBC jdbc = new JDBC();
 
-                    // Format the date for database query
                     Date sqlDate = java.sql.Date.valueOf(selectedDate);
 
-                    // Get room availability data
                     List<String> roomAvailabilities = jdbc.getCalendarAvailability(sqlDate);
 
-                    // Process "SlotTime" format entries
                     for (String availabilityStr : roomAvailabilities) {
                         if (availabilityStr.startsWith("SlotTime:")) {
                             String timeStr = availabilityStr.substring("SlotTime:".length()).trim();
 
-                            // Create time entry (available time slot)
                             Object[] row = new Object[6];
-                            row[0] = "All Rooms"; // Generic placeholder
+                            row[0] = "All Rooms";
                             row[1] = formatTimeSlot(timeStr);
-                            row[2] = true; // Available
+                            row[2] = true;
                             row[3] = "Available";
                             row[4] = "Main Venue";
                             row[5] = "60 min";
 
                             availabilityDataList.add(row);
                         }
-                        // Process pipe-delimited format
                         else if (availabilityStr.contains("|")) {
                             String[] parts = availabilityStr.split("\\|");
 
@@ -432,14 +434,12 @@ public class RoomAvailabilityUI extends JPanel {
                                 String endTimeStr = parts[4];
                                 String eventType = parts[5];
 
-                                // Calculate duration
                                 String duration = calculateDuration(startTimeStr, endTimeStr) + " min";
 
-                                // Create time entry (booked time slot)
                                 Object[] row = new Object[6];
                                 row[0] = roomId + " (" + roomName + ")";
                                 row[1] = formatTimeSlot(startTimeStr, endTimeStr);
-                                row[2] = false; // Booked
+                                row[2] = false;
                                 row[3] = eventType;
                                 row[4] = venue;
                                 row[5] = duration;
@@ -449,7 +449,6 @@ public class RoomAvailabilityUI extends JPanel {
                         }
                     }
 
-                    // For additional data, query marketing_events
                     loadMarketingEventsData();
 
                     return null;
@@ -462,6 +461,9 @@ public class RoomAvailabilityUI extends JPanel {
                 }
             }
 
+            /**
+             * Loads additional marketing events data from the database.
+             */
             private void loadMarketingEventsData() {
                 try (Connection connection = myJDBC.getConnection()) {
                     if (connection != null) {
@@ -479,17 +481,15 @@ public class RoomAvailabilityUI extends JPanel {
                             Timestamp startDate = rs.getTimestamp("startDate");
                             Timestamp endDate = rs.getTimestamp("endDate");
 
-                            // Format time slot
                             String timeSlot = formatTimeSlot(
                                     startDate.toLocalDateTime().toLocalTime().toString(),
                                     endDate.toLocalDateTime().toLocalTime().toString()
                             );
 
-                            // Create row for booked event
                             Object[] row = new Object[6];
                             row[0] = roomId;
                             row[1] = timeSlot;
-                            row[2] = false; // Booked
+                            row[2] = false;
                             row[3] = type;
                             row[4] = venue;
                             row[5] = duration + " min";
@@ -504,15 +504,12 @@ public class RoomAvailabilityUI extends JPanel {
 
             @Override
             protected void done() {
-                // Add all data to table model
                 for (Object[] row : availabilityDataList) {
                     tableModel.addRow(row);
                 }
 
-                // Apply filters
                 filterTableData();
 
-                // Update status
                 statusLabel.setText(availabilityDataList.size() + " time slots loaded for " +
                         selectedDate.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")));
             }
@@ -521,20 +518,29 @@ public class RoomAvailabilityUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Formats a single time value into a readable time slot.
+     * @param startTime Start time string in HH:mm:ss format
+     * @return Formatted time slot string
+     */
     private String formatTimeSlot(String startTime) {
-        // Format for single time (e.g., "08:00:00" → "8:00 AM")
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm:ss");
             SimpleDateFormat outputFormat = new SimpleDateFormat("h:mm a");
             Date time = (Date) inputFormat.parse(startTime);
-            return outputFormat.format(time) + " - " + outputFormat.format(new Date(time.getTime() + 3600000)); // Add 1 hour
+            return outputFormat.format(time) + " - " + outputFormat.format(new Date(time.getTime() + 3600000));
         } catch (Exception e) {
             return startTime;
         }
     }
 
+    /**
+     * Formats a time range into a readable time slot.
+     * @param startTime Start time string in HH:mm format
+     * @param endTime End time string in HH:mm format
+     * @return Formatted time slot string
+     */
     private String formatTimeSlot(String startTime, String endTime) {
-        // Format for time range (e.g., "08:00" to "09:00" → "8:00 AM - 9:00 AM")
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm");
             SimpleDateFormat outputFormat = new SimpleDateFormat("h:mm a");
@@ -546,20 +552,28 @@ public class RoomAvailabilityUI extends JPanel {
         }
     }
 
+    /**
+     * Calculates the duration between two time values in minutes.
+     * @param startTime Start time string
+     * @param endTime End time string
+     * @return Duration in minutes
+     */
     private int calculateDuration(String startTime, String endTime) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm");
             Date start = (Date) format.parse(startTime);
             Date end = (Date) format.parse(endTime);
 
-            // Calculate difference in minutes
             long diffMs = end.getTime() - start.getTime();
             return (int) (diffMs / (1000 * 60));
         } catch (Exception e) {
-            return 60; // Default 60 minutes
+            return 60;
         }
     }
 
+    /**
+     * Filters table data based on selected room and time slot filters.
+     */
     private void filterTableData() {
         String roomFilter = (String) roomFilterComboBox.getSelectedItem();
         String timeSlotFilter = (String) timeSlotFilterComboBox.getSelectedItem();
@@ -599,16 +613,20 @@ public class RoomAvailabilityUI extends JPanel {
         TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) availabilityTable.getRowSorter();
         sorter.setRowFilter(filter);
 
-        // Update status with filtered count
         statusLabel.setText(availabilityTable.getRowCount() + " time slots displayed for " +
                 selectedDate.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")));
     }
 
-    // Custom renderer for availability column
+    /**
+     * Custom renderer for the availability column to show status indicators.
+     */
     private class AvailabilityCellRenderer extends DefaultTableCellRenderer {
         private final JLabel availableLabel = new JLabel("Available");
         private final JLabel bookedLabel = new JLabel("Booked");
 
+        /**
+         * Constructs the cell renderer with configured labels.
+         */
         public AvailabilityCellRenderer() {
             availableLabel.setOpaque(true);
             availableLabel.setBackground(new Color(230, 255, 230));

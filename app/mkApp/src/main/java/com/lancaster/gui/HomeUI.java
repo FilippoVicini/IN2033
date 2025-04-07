@@ -15,7 +15,7 @@ import com.lancaster.database.myJDBC;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import com.lancaster.gui.ClientsUI;
+
 
 public class HomeUI extends JFrame {
 
@@ -29,7 +29,7 @@ public class HomeUI extends JFrame {
     private RoomAvailabilityUI roomAvailabilityUI;
     private CalendarUI calendarUI;
     private SettingsUI settingsUI;
-    private heldSeatsUI heldSeatsUI; // Added HeldSeatsUI reference
+    private heldSeatsUI heldSeatsUI;
     private JPanel sidebarPanel;
     private String username;
     private Map<String, JButton> navButtons = new HashMap<>();
@@ -39,13 +39,13 @@ public class HomeUI extends JFrame {
     private Color selectedColor = new Color(25, 42, 86);
     private Color cardHeaderColor = new Color(52, 152, 219);
 
-    // Navigation items - flat list without categories (added "Held Seats")
+
     private final String[] NAV_ITEMS = {
             "Dashboard",
             "Room Availability",
             "Tour Bookings",
             "Meeting Bookings",
-            "Film Shows",
+            "Film Bookings",
             "Films",
             "Marketing Events",
             "Held Seats",
@@ -75,7 +75,7 @@ public class HomeUI extends JFrame {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         contentPanel.setBackground(new Color(245, 246, 250));
 
-        // Initialize UI components
+
         friendsUI = new FriendsUI();
         filmsUI = new FilmsUI();
         filmShowsUI = new FilmShowsUI();
@@ -85,13 +85,12 @@ public class HomeUI extends JFrame {
         roomAvailabilityUI = new RoomAvailabilityUI();
         dashboardPanel = createDashboardPanel();
 
-        // Add dashboard panel to content by default
+
         contentPanel.add(dashboardPanel, BorderLayout.CENTER);
 
-        // Add panels to main panel
+
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // Add main panel to frame
         add(mainPanel);
 
         connectToDatabase();
@@ -103,17 +102,14 @@ public class HomeUI extends JFrame {
         headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
 
-        // Logo and title
+
         JLabel logoLabel = new JLabel("Lancaster Marketing");
         logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         logoLabel.setForeground(Color.WHITE);
-        headerPanel.add(logoLabel, BorderLayout.WEST);
 
-        // User info panel
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         userInfoPanel.setOpaque(false);
 
-        // User icon and username
         JLabel userIcon = new JLabel("👤");
         userIcon.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         userIcon.setForeground(Color.WHITE);
@@ -143,13 +139,13 @@ public class HomeUI extends JFrame {
         sidebarPanel.setPreferredSize(new Dimension(220, getHeight()));
         sidebarPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, accentColor));
 
-        // Add logo panel
+
         JPanel brandPanel = new JPanel(new BorderLayout());
         brandPanel.setBackground(new Color(31, 36, 42));
         brandPanel.setMaximumSize(new Dimension(220, 80));
         brandPanel.setPreferredSize(new Dimension(220, 80));
 
-        // Add logo
+
         try {
             Image logo = ImageIO.read(new File("src/resources/logo.png"));
             // Scale the logo to a smaller size
@@ -163,22 +159,22 @@ public class HomeUI extends JFrame {
         sidebarPanel.add(brandPanel);
         sidebarPanel.add(Box.createVerticalStrut(30));
 
-        // Create navigation buttons
+
         for (String navItem : NAV_ITEMS) {
             JButton navButton = createMenuButton(navItem);
             sidebarPanel.add(navButton);
             navButtons.put(navItem, navButton);
 
-            // Small space between buttons
+
             sidebarPanel.add(Box.createVerticalStrut(2));
         }
 
-        // Set Dashboard as selected by default
+
         JButton dashboardButton = navButtons.get("Dashboard");
         dashboardButton.setBackground(selectedColor);
         dashboardButton.setForeground(Color.WHITE);
 
-        // Add bottom padding
+
         sidebarPanel.add(Box.createVerticalGlue());
 
         mainPanel.add(sidebarPanel, BorderLayout.WEST);
@@ -197,7 +193,7 @@ public class HomeUI extends JFrame {
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Add hover effect
+
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -216,24 +212,24 @@ public class HomeUI extends JFrame {
             }
         });
 
-        // Add action listener
+
         button.addActionListener(e -> handleNavigation(text, button));
 
         return button;
     }
 
     private void handleNavigation(String destination, JButton clickedButton) {
-        // Reset all buttons
+
         navButtons.values().forEach(button -> {
             button.setBackground(primaryColor);
             button.setForeground(Color.LIGHT_GRAY);
         });
 
-        // Highlight selected button
+
         clickedButton.setBackground(selectedColor);
         clickedButton.setForeground(Color.WHITE);
 
-        // Navigate to appropriate panel
+
         contentPanel.removeAll();
 
         switch (destination) {
@@ -246,7 +242,7 @@ public class HomeUI extends JFrame {
             case "Films":
                 contentPanel.add(filmsUI, BorderLayout.CENTER);
                 break;
-            case "Film Shows":
+            case "Film Bookings":
                 contentPanel.add(filmShowsUI, BorderLayout.CENTER);
                 break;
             case "Calendar":
@@ -275,7 +271,7 @@ public class HomeUI extends JFrame {
                 break;
         }
 
-        // Refresh the content panel
+
         contentPanel.revalidate();
         contentPanel.repaint();
     }
@@ -315,11 +311,11 @@ public class HomeUI extends JFrame {
         headerPanel.add(welcomeLabel, BorderLayout.NORTH);
         headerPanel.add(dateLabel, BorderLayout.CENTER);
 
-        // Summary cards panel
+
         JPanel cardsPanel = new JPanel(new GridLayout(2, 3, 20, 20));
         cardsPanel.setOpaque(false);
 
-        // Create summary cards with more modern styling
+
         JPanel friendsCard = createModernCard("Friends of Lancaster",
                 Integer.toString(FriendsUI.friendsNum),
                 new Color(52, 152, 219),
@@ -351,15 +347,15 @@ public class HomeUI extends JFrame {
                 new Color(22, 160, 133),
                 "🪑");
 
-        // Add cards to panel
+
         cardsPanel.add(friendsCard);
         cardsPanel.add(todaysEventsCard);
         cardsPanel.add(marketingEventsCard);
         cardsPanel.add(tourBookingsCard);
         cardsPanel.add(filmShowsCard);
-        cardsPanel.add(heldSeatsCard); // Add the new card to the dashboard
+        cardsPanel.add(heldSeatsCard);
 
-        // Create activity overview panel
+
         JPanel activityPanel = new JPanel(new BorderLayout());
         activityPanel.setBackground(Color.WHITE);
         activityPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -370,13 +366,13 @@ public class HomeUI extends JFrame {
         JPanel activityHeaderPanel = new JPanel(new BorderLayout());
         activityHeaderPanel.setOpaque(false);
 
-        JLabel activityTitleLabel = new JLabel("Activity Overview");
+        JLabel activityTitleLabel = new JLabel("All Marketing events");
         activityTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         activityTitleLabel.setForeground(new Color(52, 73, 94));
 
         activityHeaderPanel.add(activityTitleLabel, BorderLayout.WEST);
 
-        // Create table to display marketing events
+
         JTable eventsTable = createMarketingEventsTable();
         JScrollPane scrollPane = new JScrollPane(eventsTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -384,7 +380,7 @@ public class HomeUI extends JFrame {
         activityPanel.add(activityHeaderPanel, BorderLayout.NORTH);
         activityPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Arrange panels in main dashboard
+
         JPanel centerPanel = new JPanel(new BorderLayout(0, 20));
         centerPanel.setOpaque(false);
         centerPanel.add(cardsPanel, BorderLayout.NORTH);
@@ -396,7 +392,7 @@ public class HomeUI extends JFrame {
         return dashboardContent;
     }
 
-    // New method to get the count of held seats
+
     private String getHeldSeatsCount() {
         try (Connection connection = myJDBC.getConnection()) {
             if (connection != null) {
@@ -415,13 +411,12 @@ public class HomeUI extends JFrame {
     }
 
     private JTable createMarketingEventsTable() {
-        // Column names
-        String[] columnNames = {"Event Name", "Date", "Location", "Attendees", "Status"};
 
-        // Sample data - in a real app, this would come from the database-4
+        String[] columnNames = {"Event type", "Start Date", "Location", "End date", "Room"};
+
+
         Object[][] data = getMarketingEventsData();
 
-        // Create table
         JTable table = new JTable(data, columnNames);
         styleTable(table);
 
@@ -429,23 +424,23 @@ public class HomeUI extends JFrame {
     }
 
     private Object[][] getMarketingEventsData() {
-        // List to store rows temporarily since we don't know final count initially
+
         ArrayList<Object> dataList = new ArrayList<>();
 
-        // Query database for marketing events
+
         try (Connection connection = myJDBC.getConnection()) {
             if (connection != null) {
                 String query = "SELECT eventID, type, startDate, endDate, room, duration, name, peopleNum, venue FROM marketing_events ORDER BY startDate DESC LIMIT 5";
                 try (Statement stmt = connection.createStatement();
                      ResultSet rs = stmt.executeQuery(query)) {
 
-                    // Iterate through result set and add each row to our list
+
                     while (rs.next()) {
-                        Object[] row = new Object[5]; // Create array for current row with 5 columns
+                        Object[] row = new Object[5];
                         row[0] = rs.getString("type");
-                        row[1] = rs.getDate("startDate");
+                        row[1] = rs.getTimestamp("startDate");
                         row[2] = rs.getString("name");
-                        row[3] = rs.getDate("endDate");
+                        row[3] = rs.getTimestamp("endDate");
                         row[4] = rs.getString("venue");
                         dataList.add(row);
                     }
@@ -455,7 +450,6 @@ public class HomeUI extends JFrame {
             e.printStackTrace();
         }
 
-        // Convert list to 2D array
         Object[][] data = new Object[dataList.size()][5];
         for (int i = 0; i < dataList.size(); i++) {
             data[i] = (Object[]) dataList.get(i);
@@ -562,7 +556,7 @@ public class HomeUI extends JFrame {
         return "0";
     }
 
-    // Table styling method
+
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -586,7 +580,7 @@ public class HomeUI extends JFrame {
 
     public static void main(String[] args) {
         try {
-            // Set system look and feel
+
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();

@@ -21,6 +21,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.RowFilter;
 import com.lancaster.database.myJDBC;
 
+/**
+ * UI panel for managing film shows.
+ * Provides a table display of film screenings with filtering and CRUD operations.
+ */
 public class FilmShowsUI extends JPanel {
     private JTable showsTable;
     private DefaultTableModel tableModel;
@@ -28,23 +32,23 @@ public class FilmShowsUI extends JPanel {
     private JTextField searchField;
     private TableRowSorter<DefaultTableModel> sorter;
 
-    // Colors to match TourBookingsUI
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
     private Color backgroundColor = new Color(245, 246, 250);
 
+    /**
+     * Constructs the FilmShowsUI panel with search functionality and film shows table.
+     */
     public FilmShowsUI() {
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -59,11 +63,9 @@ public class FilmShowsUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -75,14 +77,13 @@ public class FilmShowsUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         styleButton(searchButton, highlightColor);
-        searchButton.setForeground(Color.BLACK); // Make text black
+        searchButton.setForeground(Color.BLACK);
         searchButton.addActionListener(e -> searchFilter());
 
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -92,34 +93,31 @@ public class FilmShowsUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model
         String[] columns = {"ID", "Film ID", "Film Title", "Show Date", "End Date", "Duration", "Ticket Price", "Room"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 0 || columnIndex == 1 || columnIndex == 5) {
-                    return Integer.class; // Show ID, Film ID, Duration as integers
+                    return Integer.class;
                 } else if (columnIndex == 6) {
-                    return Double.class; // Ticket Price as double
+                    return Double.class;
                 } else if (columnIndex == 3 || columnIndex == 4) {
-                    return Date.class; // Dates as Date objects
+                    return Date.class;
                 }
                 return String.class;
             }
         };
 
-        // Create table with sorting capability
         showsTable = new JTable(tableModel);
         sorter = new TableRowSorter<>(tableModel);
         showsTable.setRowSorter(sorter);
         styleTable(showsTable);
 
-        // Add search functionality to searchField
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -137,7 +135,6 @@ public class FilmShowsUI extends JPanel {
             }
         });
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(showsTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -145,30 +142,28 @@ public class FilmShowsUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
         JButton refreshButton = new JButton("Refresh");
         styleButton(refreshButton, Color.BLACK);
-        refreshButton.setForeground(Color.BLACK); // Make text black
+        refreshButton.setForeground(Color.BLACK);
         refreshButton.addActionListener(e -> loadFilmShowsData());
 
         JButton newShowButton = new JButton("New Show");
         styleButton(newShowButton, Color.BLACK);
-        newShowButton.setForeground(Color.BLACK); // Make text black
+        newShowButton.setForeground(Color.BLACK);
         newShowButton.addActionListener(e -> createNewShow());
 
         JButton deleteShowButton = new JButton("Delete Show");
         styleButton(deleteShowButton, Color.BLACK);
-        deleteShowButton.setForeground(Color.BLACK); // Make text black
+        deleteShowButton.setForeground(Color.BLACK);
         deleteShowButton.addActionListener(e -> deleteSelectedShow());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(newShowButton);
         buttonPanel.add(deleteShowButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -176,7 +171,6 @@ public class FilmShowsUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -189,21 +183,23 @@ public class FilmShowsUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add right-click context menu
         addContextMenu();
 
         loadFilmShowsData();
     }
 
+    /**
+     * Applies styling to the film shows table.
+     *
+     * @param table The table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -216,7 +212,6 @@ public class FilmShowsUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Apply custom cell renderer for formatting
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -230,17 +225,13 @@ public class FilmShowsUI extends JPanel {
                     c.setForeground(Color.BLACK);
                 }
 
-                // Format currency
-                if (column == 6 && value != null) { // Ticket price column
+                if (column == 6 && value != null) {
                     setText("£" + String.format("%.2f", value));
                 }
 
-                // Format duration
-                if (column == 5 && value != null) { // Duration column
+                if (column == 5 && value != null) {
                     setText(value + " min");
                 }
-
-                // Date formatting handled by table cell editor
 
                 setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
                 return c;
@@ -248,12 +239,10 @@ public class FilmShowsUI extends JPanel {
         };
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Apply renderer to all columns
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -262,16 +251,21 @@ public class FilmShowsUI extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)));
     }
 
+    /**
+     * Applies styling to a button with hover effects.
+     *
+     * @param button The button to style
+     * @param color The base color for the button
+     */
     private void styleButton(JButton button, Color color) {
         button.setBackground(color);
-        button.setForeground(Color.WHITE); // Default color, will be overridden for specific buttons
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -287,6 +281,9 @@ public class FilmShowsUI extends JPanel {
         });
     }
 
+    /**
+     * Filters the table based on search text.
+     */
     private void searchFilter() {
         String text = searchField.getText().trim().toLowerCase();
         if (text.isEmpty()) {
@@ -294,9 +291,9 @@ public class FilmShowsUI extends JPanel {
             statusLabel.setText("Showing all records");
         } else {
             List<RowFilter<Object, Object>> filters = new ArrayList<>();
-            filters.add(RowFilter.regexFilter("(?i)" + text, 2)); // Film Title
-            filters.add(RowFilter.regexFilter("(?i)" + text, 3)); // Show Date
-            filters.add(RowFilter.regexFilter("(?i)" + text, 7)); // Room
+            filters.add(RowFilter.regexFilter("(?i)" + text, 2));
+            filters.add(RowFilter.regexFilter("(?i)" + text, 3));
+            filters.add(RowFilter.regexFilter("(?i)" + text, 7));
 
             RowFilter<Object, Object> combinedFilter = RowFilter.orFilter(filters);
             sorter.setRowFilter(combinedFilter);
@@ -307,6 +304,9 @@ public class FilmShowsUI extends JPanel {
         }
     }
 
+    /**
+     * Adds a context menu to the film shows table.
+     */
     private void addContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
 
@@ -326,13 +326,14 @@ public class FilmShowsUI extends JPanel {
         showsTable.setComponentPopupMenu(contextMenu);
     }
 
+    /**
+     * Displays details of the selected film show.
+     */
     private void viewShowDetails() {
         int selectedRow = showsTable.getSelectedRow();
         if (selectedRow != -1) {
-            // Convert to model index in case table is sorted
             int modelRow = showsTable.convertRowIndexToModel(selectedRow);
 
-            // Get the data for the selected row
             int showId = (Integer) tableModel.getValueAt(modelRow, 0);
             String filmTitle = (String) tableModel.getValueAt(modelRow, 2);
             Date showDate = (Date) tableModel.getValueAt(modelRow, 3);
@@ -341,12 +342,10 @@ public class FilmShowsUI extends JPanel {
             double price = (Double) tableModel.getValueAt(modelRow, 6);
             String room = (String) tableModel.getValueAt(modelRow, 7);
 
-            // Create styled details panel
             JPanel detailsPanel = new JPanel();
             detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
             detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            // Format the details
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
             addDetailRow(detailsPanel, "Show ID:", String.valueOf(showId));
@@ -357,13 +356,19 @@ public class FilmShowsUI extends JPanel {
             addDetailRow(detailsPanel, "Ticket Price:", "£" + String.format("%.2f", price));
             addDetailRow(detailsPanel, "Room:", room);
 
-            // Show details in a dialog
             JOptionPane.showMessageDialog(this, detailsPanel, "Show Details", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Please select a show first", "No Selection", JOptionPane.WARNING_MESSAGE);
         }
     }
 
+    /**
+     * Adds a row with label and value to a details panel.
+     *
+     * @param panel The panel to add the row to
+     * @param label The label text
+     * @param value The value text
+     */
     private void addDetailRow(JPanel panel, String label, String value) {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
@@ -381,13 +386,14 @@ public class FilmShowsUI extends JPanel {
         panel.add(Box.createVerticalStrut(5));
     }
 
+    /**
+     * Opens a dialog to edit the selected film show.
+     */
     private void editSelectedShow() {
         int selectedRow = showsTable.getSelectedRow();
         if (selectedRow != -1) {
-            // Convert to model index in case table is sorted
             int modelRow = showsTable.convertRowIndexToModel(selectedRow);
 
-            // Get the data for the selected row
             int showId = (Integer) tableModel.getValueAt(modelRow, 0);
             int filmId = (Integer) tableModel.getValueAt(modelRow, 1);
             String filmTitle = (String) tableModel.getValueAt(modelRow, 2);
@@ -397,22 +403,22 @@ public class FilmShowsUI extends JPanel {
             double price = (Double) tableModel.getValueAt(modelRow, 6);
             String room = (String) tableModel.getValueAt(modelRow, 7);
 
-            // Create edit dialog similar to createNewShow but prepopulated
             JOptionPane.showMessageDialog(this, "Edit functionality would go here", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Please select a show first", "No Selection", JOptionPane.WARNING_MESSAGE);
         }
     }
 
+    /**
+     * Deletes the selected film show after confirmation.
+     */
     private void deleteSelectedShow() {
         int selectedRow = showsTable.getSelectedRow();
         if (selectedRow != -1) {
-            // Convert to model index in case table is sorted
             int modelRow = showsTable.convertRowIndexToModel(selectedRow);
             int showId = (Integer) tableModel.getValueAt(modelRow, 0);
             String filmTitle = (String) tableModel.getValueAt(modelRow, 2);
 
-            // Create a styled confirmation dialog
             JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
             confirmPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -444,6 +450,12 @@ public class FilmShowsUI extends JPanel {
         }
     }
 
+    /**
+     * Deletes a show from the database.
+     *
+     * @param showId The ID of the show to delete
+     * @throws Exception If there is a database error
+     */
     private void deleteShow(int showId) throws Exception {
         String query = "DELETE FROM film_bookings WHERE showId = ?";
 
@@ -454,6 +466,9 @@ public class FilmShowsUI extends JPanel {
         }
     }
 
+    /**
+     * Loads film show data from the database.
+     */
     private void loadFilmShowsData() {
         statusLabel.setText("Loading data...");
         statusLabel.setForeground(accentColor);
@@ -467,10 +482,9 @@ public class FilmShowsUI extends JPanel {
                         Statement dataStmt = connection.createStatement();
                         ResultSet dataRs = dataStmt.executeQuery(dataQuery);
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
 
                         while (dataRs.next()) {
-                            // Handle zero date values and convert them to null
                             Date showDate = dataRs.getDate("showDate");
                             if (showDate != null && showDate.toString().equals("0000-00-00")) {
                                 showDate = null;
@@ -514,12 +528,13 @@ public class FilmShowsUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Opens a dialog to create a new film show.
+     */
     private void createNewShow() {
-        // Create dialog for new show input with improved styling
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Film Show", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -539,56 +554,46 @@ public class FilmShowsUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Create form fields with improved styling
-        // Film ID field
         addFormField(formPanel, "Film ID:", gbc, 0);
         JTextField filmIdField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(filmIdField, gbc);
 
-        // Film Title field
         addFormField(formPanel, "Film Title:", gbc, 1);
         JTextField filmTitleField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(filmTitleField, gbc);
 
-        // Start Date field
         addFormField(formPanel, "Start Date (YYYY-MM-DD HH:MM:SS):", gbc, 2);
         JTextField startDateField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(startDateField, gbc);
 
-        // End Date field
         addFormField(formPanel, "End Date (YYYY-MM-DD HH:MM:SS):", gbc, 3);
         JTextField endDateField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 3;
         formPanel.add(endDateField, gbc);
 
-        // Duration field
         addFormField(formPanel, "Duration (min):", gbc, 4);
         JTextField durationField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 4;
         formPanel.add(durationField, gbc);
 
-        // Ticket Price field
         addFormField(formPanel, "Ticket Price (£):", gbc, 5);
         JTextField ticketPriceField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 5;
         formPanel.add(ticketPriceField, gbc);
 
-        // Room field
         addFormField(formPanel, "Room:", gbc, 6);
         JTextField roomField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 6;
         formPanel.add(roomField, gbc);
 
-        // Venue field
         addFormField(formPanel, "Venue:", gbc, 7);
         JTextField venueField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 7;
         formPanel.add(venueField, gbc);
 
-        // Description field
         addFormField(formPanel, "Description:", gbc, 8);
         JTextArea descriptionArea = new JTextArea(3, 20);
         descriptionArea.setBorder(BorderFactory.createCompoundBorder(
@@ -604,7 +609,6 @@ public class FilmShowsUI extends JPanel {
         gbc.gridx = 1; gbc.gridy = 8;
         formPanel.add(descScrollPane, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -620,7 +624,6 @@ public class FilmShowsUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             try {
-                // Basic validation
                 if (filmIdField.getText().trim().isEmpty() || filmTitleField.getText().trim().isEmpty() ||
                         startDateField.getText().trim().isEmpty() || endDateField.getText().trim().isEmpty() ||
                         durationField.getText().trim().isEmpty() || ticketPriceField.getText().trim().isEmpty() ||
@@ -631,7 +634,6 @@ public class FilmShowsUI extends JPanel {
                     return;
                 }
 
-                // Get values from form
                 int filmId = Integer.parseInt(filmIdField.getText());
                 String filmTitle = filmTitleField.getText();
                 String startDateStr = startDateField.getText();
@@ -642,7 +644,6 @@ public class FilmShowsUI extends JPanel {
                 String venue = venueField.getText();
                 String description = descriptionArea.getText();
 
-                // Validate timestamp format
                 if (!startDateStr.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}") ||
                         !endDateStr.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")) {
                     JOptionPane.showMessageDialog(dialog,
@@ -652,21 +653,18 @@ public class FilmShowsUI extends JPanel {
                     return;
                 }
 
-                // Convert startDateStr and endDateStr to Timestamp
                 java.sql.Timestamp startTimestamp = java.sql.Timestamp.valueOf(startDateStr);
                 java.sql.Timestamp endTimestamp = java.sql.Timestamp.valueOf(endDateStr);
 
-                // Insert new show into the database
                 insertNewShow(filmId, filmTitle, startTimestamp, endTimestamp, duration, ticketPrice, room, venue, description);
-                loadFilmShowsData(); // Refresh the table data
+                loadFilmShowsData();
 
-                // Show success message with improved styling
                 JOptionPane.showMessageDialog(dialog,
                         "New film show has been added successfully!",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                dialog.dispose(); // Close the dialog after successful insertion
+                dialog.dispose();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Please enter valid numbers for Film ID, Duration, and Ticket Price",
@@ -700,6 +698,14 @@ public class FilmShowsUI extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Adds a form field label to a panel.
+     *
+     * @param panel The panel to add the label to
+     * @param labelText The text for the label
+     * @param gbc The GridBagConstraints to use
+     * @param row The row index
+     */
     private void addFormField(JPanel panel, String labelText, GridBagConstraints gbc, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
@@ -708,6 +714,11 @@ public class FilmShowsUI extends JPanel {
         panel.add(label, gbc);
     }
 
+    /**
+     * Creates a styled text field.
+     *
+     * @return A styled JTextField
+     */
     private JTextField createStyledTextField() {
         JTextField field = new JTextField(20);
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -718,6 +729,20 @@ public class FilmShowsUI extends JPanel {
         return field;
     }
 
+    /**
+     * Inserts a new film show into the database.
+     *
+     * @param filmId The film ID
+     * @param filmTitle The film title
+     * @param startTimestamp The start timestamp
+     * @param endTimestamp The end timestamp
+     * @param duration The duration in minutes
+     * @param ticketPrice The ticket price
+     * @param room The room
+     * @param venue The venue
+     * @param description The description
+     * @throws Exception If there is a database error
+     */
     private void insertNewShow(int filmId, String filmTitle, java.sql.Timestamp startTimestamp, java.sql.Timestamp endTimestamp, int duration, double ticketPrice, String room, String venue, String description) throws Exception {
         String query = "INSERT INTO film_bookings (filmId, filmTitle, showDate, endDate, duration, ticketPrice, room, venue, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

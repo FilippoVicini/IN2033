@@ -13,6 +13,10 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import com.lancaster.database.myJDBC;
 
+/**
+ * UI panel for managing Lancaster's Friends.
+ * Provides a table display of friends with search capability and CRUD operations.
+ */
 public class FriendsUI extends JPanel {
     private JTable friendsTable;
     private DefaultTableModel tableModel;
@@ -20,23 +24,23 @@ public class FriendsUI extends JPanel {
     private JTextField searchField;
     public static int friendsNum;
 
-    // Colors to match TourBookingsUI
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
     private Color backgroundColor = new Color(245, 246, 250);
 
+    /**
+     * Constructs the FriendsUI panel with search functionality and friends table.
+     */
     public FriendsUI() {
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -51,11 +55,9 @@ public class FriendsUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -67,14 +69,13 @@ public class FriendsUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         styleButton(searchButton, highlightColor);
-        searchButton.setForeground(Color.BLACK); // Make text black
+        searchButton.setForeground(Color.BLACK);
         searchButton.addActionListener(e -> searchFriends());
 
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -84,12 +85,11 @@ public class FriendsUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model
         String[] columns = {"ID", "Name", "Email", "Status", "Join Date", "Bookings"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
 
             @Override
@@ -101,11 +101,9 @@ public class FriendsUI extends JPanel {
             }
         };
 
-        // Create table
         friendsTable = new JTable(tableModel);
         styleTable(friendsTable);
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(friendsTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -113,24 +111,22 @@ public class FriendsUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
         JButton refreshButton = new JButton("Refresh");
         styleButton(refreshButton, Color.BLACK);
-        refreshButton.setForeground(Color.BLACK); // Make text black
+        refreshButton.setForeground(Color.BLACK);
         refreshButton.addActionListener(e -> loadFriendsData());
 
         JButton newFriendButton = new JButton("New Friend");
         styleButton(newFriendButton, Color.BLACK);
-        newFriendButton.setForeground(Color.BLACK); // Make text black
+        newFriendButton.setForeground(Color.BLACK);
         newFriendButton.addActionListener(e -> showNewUserDialog());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(newFriendButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -138,7 +134,6 @@ public class FriendsUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -151,21 +146,23 @@ public class FriendsUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add right-click context menu
         addTableContextMenu();
 
         loadFriendsData();
     }
 
+    /**
+     * Applies styling to the friends table.
+     *
+     * @param table The table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -178,7 +175,6 @@ public class FriendsUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -187,16 +183,21 @@ public class FriendsUI extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)));
     }
 
+    /**
+     * Applies styling to a button with hover effects.
+     *
+     * @param button The button to style
+     * @param color The base color for the button
+     */
     private void styleButton(JButton button, Color color) {
         button.setBackground(color);
-        button.setForeground(Color.WHITE); // Default color, will be overridden for specific buttons
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -212,6 +213,9 @@ public class FriendsUI extends JPanel {
         });
     }
 
+    /**
+     * Adds a context menu to the friends table.
+     */
     private void addTableContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
 
@@ -260,8 +264,13 @@ public class FriendsUI extends JPanel {
         friendsTable.setComponentPopupMenu(contextMenu);
     }
 
+    /**
+     * Displays details of the selected friend.
+     *
+     * @param friendId The ID of the selected friend
+     * @param name The name of the selected friend
+     */
     private void viewFriendDetails(int friendId, String name) {
-        // Create styled details panel
         JPanel detailsPanel = new JPanel();
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -286,10 +295,16 @@ public class FriendsUI extends JPanel {
             e.printStackTrace();
         }
 
-        // Show details in a dialog
         JOptionPane.showMessageDialog(this, detailsPanel, "Friend Details: " + name, JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Adds a row with label and value to a details panel.
+     *
+     * @param panel The panel to add the row to
+     * @param label The label text
+     * @param value The value text
+     */
     private void addDetailRow(JPanel panel, String label, String value) {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
@@ -307,8 +322,13 @@ public class FriendsUI extends JPanel {
         panel.add(Box.createVerticalStrut(5));
     }
 
+    /**
+     * Deletes a friend from the database after confirmation.
+     *
+     * @param friendId The ID of the friend to delete
+     * @param name The name of the friend to delete
+     */
     private void deleteFriend(int friendId, String name) {
-        // Create a styled confirmation dialog
         JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
         confirmPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -346,6 +366,9 @@ public class FriendsUI extends JPanel {
         }
     }
 
+    /**
+     * Searches for friends based on the search term.
+     */
     private void searchFriends() {
         String searchTerm = searchField.getText().trim();
         if (searchTerm.isEmpty()) {
@@ -392,12 +415,13 @@ public class FriendsUI extends JPanel {
         }
     }
 
+    /**
+     * Opens a dialog to create a new friend.
+     */
     private void showNewUserDialog() {
-        // Create dialog for new friend input with improved styling
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Friend of Lancaster", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -417,20 +441,16 @@ public class FriendsUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Create form fields with improved styling
-        // Name field
         addFormField(formPanel, "Name:", gbc, 0);
         JTextField nameField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(nameField, gbc);
 
-        // Email field
         addFormField(formPanel, "Email:", gbc, 1);
         JTextField emailField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(emailField, gbc);
 
-        // Status field
         addFormField(formPanel, "Status:", gbc, 2);
         JComboBox<String> statusCombo = new JComboBox<>(new String[]{"Active", "Inactive"});
         statusCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -438,7 +458,6 @@ public class FriendsUI extends JPanel {
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(statusCombo, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -454,12 +473,10 @@ public class FriendsUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             try {
-                // Get values from form
                 String name = nameField.getText().trim();
                 String email = emailField.getText().trim();
-                int status = statusCombo.getSelectedIndex() == 0 ? 1 : 0; // 1 for Active, 0 for Inactive
+                int status = statusCombo.getSelectedIndex() == 0 ? 1 : 0;
 
-                // Validate input fields
                 if (name.isEmpty() || email.isEmpty()) {
                     JOptionPane.showMessageDialog(dialog,
                             "Please fill in all required fields",
@@ -468,17 +485,15 @@ public class FriendsUI extends JPanel {
                     return;
                 }
 
-                // Insert new friend into the database
                 insertNewUser(name, email, status);
-                loadFriendsData(); // Refresh the table data
+                loadFriendsData();
 
-                // Show success message with improved styling
                 JOptionPane.showMessageDialog(dialog,
                         "New friend has been added successfully!",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                dialog.dispose(); // Close the dialog after successful insertion
+                dialog.dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Error adding new friend: " + ex.getMessage(),
@@ -502,6 +517,14 @@ public class FriendsUI extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Adds a form field label to a panel.
+     *
+     * @param panel The panel to add the label to
+     * @param labelText The text for the label
+     * @param gbc The GridBagConstraints to use
+     * @param row The row index
+     */
     private void addFormField(JPanel panel, String labelText, GridBagConstraints gbc, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
@@ -510,6 +533,11 @@ public class FriendsUI extends JPanel {
         panel.add(label, gbc);
     }
 
+    /**
+     * Creates a styled text field.
+     *
+     * @return A styled JTextField
+     */
     private JTextField createStyledTextField() {
         JTextField field = new JTextField(20);
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -520,6 +548,14 @@ public class FriendsUI extends JPanel {
         return field;
     }
 
+    /**
+     * Inserts a new friend into the database.
+     *
+     * @param name The friend's name
+     * @param email The friend's email
+     * @param status The subscription status (1 for Active, 0 for Inactive)
+     * @throws Exception If there is a database error
+     */
     private void insertNewUser(String name, String email, int status) throws Exception {
         String query = "INSERT INTO friends_lancaster (name, email, subscription_status, join_date, booking_num) " +
                 "VALUES (?, ?, ?, CURRENT_DATE(), 0)";
@@ -535,6 +571,9 @@ public class FriendsUI extends JPanel {
         }
     }
 
+    /**
+     * Loads friends data from the database.
+     */
     private void loadFriendsData() {
         statusLabel.setText("Loading data...");
         statusLabel.setForeground(accentColor);
@@ -544,7 +583,6 @@ public class FriendsUI extends JPanel {
             protected Void doInBackground() {
                 try (Connection connection = myJDBC.getConnection()) {
                     if (connection != null) {
-                        // Get total count of friends
                         String countQuery = "SELECT COUNT(friend_id) FROM friends_lancaster";
                         try (Statement countStmt = connection.createStatement();
                              ResultSet countRs = countStmt.executeQuery(countQuery)) {
@@ -553,7 +591,6 @@ public class FriendsUI extends JPanel {
                             }
                         }
 
-                        // Get friends data
                         String dataQuery = "SELECT friend_id, name, email, subscription_status, join_date, booking_num FROM friends_lancaster";
                         try (Statement dataStmt = connection.createStatement();
                              ResultSet dataRs = dataStmt.executeQuery(dataQuery)) {

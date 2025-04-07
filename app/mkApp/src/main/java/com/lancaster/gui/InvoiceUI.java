@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Vector;
 
+/**
+ * UI panel for managing invoices.
+ * Provides a table display of invoices with search functionality and CRUD operations.
+ */
 public class InvoiceUI extends JPanel {
     private JTable invoiceTable;
     private DefaultTableModel tableModel;
@@ -20,23 +24,23 @@ public class InvoiceUI extends JPanel {
     private JTextField searchField;
     private JTextField totalField;
 
-    // Colors to match TourBookingsUI
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
     private Color backgroundColor = new Color(245, 246, 250);
 
+    /**
+     * Constructs the InvoiceUI panel with search functionality and invoice table.
+     */
     public InvoiceUI() {
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -51,11 +55,9 @@ public class InvoiceUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -67,14 +69,13 @@ public class InvoiceUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         styleButton(searchButton, highlightColor);
-        searchButton.setForeground(Color.BLACK); // Make text black
+        searchButton.setForeground(Color.BLACK);
         searchButton.addActionListener(e -> searchInvoices());
 
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -84,30 +85,27 @@ public class InvoiceUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model
         String[] columns = {"Invoice ID", "Client Name", "Date", "Cost (£)", "Total (£)"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 switch(columnIndex) {
-                    case 0: return Integer.class; // Invoice ID
-                    case 3: return Double.class; // Cost
-                    case 4: return Double.class; // Total
+                    case 0: return Integer.class;
+                    case 3: return Double.class;
+                    case 4: return Double.class;
                     default: return String.class;
                 }
             }
         };
 
-        // Create table
         invoiceTable = new JTable(tableModel);
         styleTable(invoiceTable);
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(invoiceTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -115,7 +113,6 @@ public class InvoiceUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create total panel
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         totalPanel.setOpaque(false);
         totalPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -135,24 +132,22 @@ public class InvoiceUI extends JPanel {
         totalField.setBackground(new Color(240, 240, 240));
         totalPanel.add(totalField);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
         JButton refreshButton = new JButton("Refresh");
         styleButton(refreshButton, Color.BLACK);
-        refreshButton.setForeground(Color.BLACK); // Make text black
+        refreshButton.setForeground(Color.BLACK);
         refreshButton.addActionListener(e -> loadInvoiceData());
 
         JButton newInvoiceButton = new JButton("New Invoice");
         styleButton(newInvoiceButton, Color.BLACK);
-        newInvoiceButton.setForeground(Color.BLACK); // Make text black
+        newInvoiceButton.setForeground(Color.BLACK);
         newInvoiceButton.addActionListener(e -> createNewInvoice());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(newInvoiceButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -160,7 +155,6 @@ public class InvoiceUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -173,22 +167,24 @@ public class InvoiceUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
         cardPanel.add(totalPanel, BorderLayout.SOUTH);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add right-click context menu
         addTableContextMenu();
 
         loadInvoiceData();
     }
 
+    /**
+     * Applies styling to the invoice table.
+     *
+     * @param table The table to style
+     */
     private void styleTable(JTable table) {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(35);
@@ -201,7 +197,6 @@ public class InvoiceUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -210,16 +205,21 @@ public class InvoiceUI extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)));
     }
 
+    /**
+     * Applies styling to a button with hover effects.
+     *
+     * @param button The button to style
+     * @param color The base color for the button
+     */
     private void styleButton(JButton button, Color color) {
         button.setBackground(color);
-        button.setForeground(Color.WHITE); // Default color, will be overridden for specific buttons
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -235,6 +235,9 @@ public class InvoiceUI extends JPanel {
         });
     }
 
+    /**
+     * Searches for invoices based on client name.
+     */
     private void searchInvoices() {
         String searchTerm = searchField.getText().trim();
         if (searchTerm.isEmpty()) {
@@ -299,6 +302,9 @@ public class InvoiceUI extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Adds a context menu to the invoice table.
+     */
     private void addTableContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
 
@@ -335,8 +341,13 @@ public class InvoiceUI extends JPanel {
         invoiceTable.setComponentPopupMenu(contextMenu);
     }
 
+    /**
+     * Displays details of the selected invoice.
+     *
+     * @param invoiceId The ID of the invoice to display
+     * @param clientName The name of the client
+     */
     private void viewInvoiceDetails(int invoiceId, String clientName) {
-        // Create styled details panel
         JPanel detailsPanel = new JPanel();
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -357,21 +368,24 @@ public class InvoiceUI extends JPanel {
                     addDetailRow(detailsPanel, "Cost:", "£" + String.format("%.2f", rs.getDouble("cost")));
                     addDetailRow(detailsPanel, "Total:", "£" + String.format("%.2f", rs.getDouble("total")));
 
-                    // Add created by info
-                    addDetailRow(detailsPanel, "Created By:", "FilippoVicini"); // This would typically come from the database
-
-                    // Add payment status if available
-                    addDetailRow(detailsPanel, "Status:", "Paid"); // This would typically come from the database
+                    addDetailRow(detailsPanel, "Created By:", "FilippoVicini");
+                    addDetailRow(detailsPanel, "Status:", "Paid");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Show details in a dialog
         JOptionPane.showMessageDialog(this, detailsPanel, "Invoice Details: #" + invoiceId, JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Adds a row with label and value to a details panel.
+     *
+     * @param panel The panel to add the row to
+     * @param label The label text
+     * @param value The value text
+     */
     private void addDetailRow(JPanel panel, String label, String value) {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
@@ -389,8 +403,13 @@ public class InvoiceUI extends JPanel {
         panel.add(Box.createVerticalStrut(5));
     }
 
+    /**
+     * Deletes an invoice after confirmation.
+     *
+     * @param invoiceId The ID of the invoice to delete
+     * @param clientName The name of the client
+     */
     private void deleteInvoice(int invoiceId, String clientName) {
-        // Create a styled confirmation dialog
         JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
         confirmPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -428,12 +447,13 @@ public class InvoiceUI extends JPanel {
         }
     }
 
+    /**
+     * Opens a dialog to create a new invoice.
+     */
     private void createNewInvoice() {
-        // Create dialog for new invoice input with improved styling
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Invoice", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -453,37 +473,32 @@ public class InvoiceUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Client Name field
         addFormField(formPanel, "Client Name:", gbc, 0);
         JTextField clientNameField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(clientNameField, gbc);
 
-        // Cost field
         addFormField(formPanel, "Cost (£):", gbc, 1);
         JTextField costField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(costField, gbc);
 
-        // Current Date field (non-editable)
         addFormField(formPanel, "Date:", gbc, 2);
         JTextField dateField = createStyledTextField();
-        dateField.setText("2025-04-07 07:41:47"); // Current date from parameter
+        dateField.setText("2025-04-07 07:41:47");
         dateField.setEditable(false);
         dateField.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(dateField, gbc);
 
-        // Created By field (non-editable)
         addFormField(formPanel, "Created By:", gbc, 3);
         JTextField createdByField = createStyledTextField();
-        createdByField.setText("FilippoVicini"); // Current user from parameter
+        createdByField.setText("FilippoVicini");
         createdByField.setEditable(false);
         createdByField.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1; gbc.gridy = 3;
         formPanel.add(createdByField, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -499,7 +514,6 @@ public class InvoiceUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             try {
-                // Basic validation
                 if (clientNameField.getText().trim().isEmpty() || costField.getText().trim().isEmpty()) {
                     JOptionPane.showMessageDialog(dialog,
                             "Please fill in all required fields",
@@ -508,7 +522,6 @@ public class InvoiceUI extends JPanel {
                     return;
                 }
 
-                // Get values from form
                 String clientName = clientNameField.getText().trim();
                 double cost;
 
@@ -530,13 +543,11 @@ public class InvoiceUI extends JPanel {
                     return;
                 }
 
-                double total = cost; // In this case, total equals cost
+                double total = cost;
 
-                // Insert new invoice into the database
                 insertNewInvoice(clientName, cost, total);
-                loadInvoiceData(); // Refresh the table data
+                loadInvoiceData();
 
-                // Show success message
                 JOptionPane.showMessageDialog(dialog,
                         "New invoice has been added successfully!",
                         "Success",
@@ -566,6 +577,14 @@ public class InvoiceUI extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Adds a form field label to a panel.
+     *
+     * @param panel The panel to add the label to
+     * @param labelText The text for the label
+     * @param gbc The GridBagConstraints to use
+     * @param row The row index
+     */
     private void addFormField(JPanel panel, String labelText, GridBagConstraints gbc, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
@@ -574,6 +593,11 @@ public class InvoiceUI extends JPanel {
         panel.add(label, gbc);
     }
 
+    /**
+     * Creates a styled text field.
+     *
+     * @return A styled JTextField
+     */
     private JTextField createStyledTextField() {
         JTextField field = new JTextField(20);
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -584,6 +608,14 @@ public class InvoiceUI extends JPanel {
         return field;
     }
 
+    /**
+     * Inserts a new invoice into the database.
+     *
+     * @param clientName The name of the client
+     * @param cost The cost amount
+     * @param total The total amount
+     * @throws Exception If there is a database error
+     */
     private void insertNewInvoice(String clientName, double cost, double total) throws Exception {
         String query = "INSERT INTO invoices (clientName, date, cost, total) VALUES (?, NOW(), ?, ?)";
 
@@ -596,6 +628,9 @@ public class InvoiceUI extends JPanel {
         }
     }
 
+    /**
+     * Loads invoice data from the database.
+     */
     private void loadInvoiceData() {
         statusLabel.setText("Loading data...");
         statusLabel.setForeground(accentColor);
@@ -609,7 +644,7 @@ public class InvoiceUI extends JPanel {
                         Statement stmt = connection.createStatement();
                         ResultSet rs = stmt.executeQuery(query);
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
                         double totalSum = 0;
                         int count = 0;
 

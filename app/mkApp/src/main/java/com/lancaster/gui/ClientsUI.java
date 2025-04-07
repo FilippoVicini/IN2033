@@ -18,7 +18,6 @@ public class ClientsUI extends JPanel {
     private JLabel statusLabel;
     private JTextField searchField;
 
-    // Colors to match other UIs
     private Color primaryColor = new Color(47, 54, 64);
     private Color accentColor = new Color(86, 101, 115);
     private Color highlightColor = new Color(52, 152, 219);
@@ -29,12 +28,10 @@ public class ClientsUI extends JPanel {
         setBackground(backgroundColor);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(backgroundColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Title with icon
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         titlePanel.setOpaque(false);
 
@@ -49,11 +46,9 @@ public class ClientsUI extends JPanel {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.WEST);
 
-        // Create actions panel with search and status
         JPanel actionsPanel = new JPanel(new BorderLayout(10, 0));
         actionsPanel.setOpaque(false);
 
-        // Search field
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
@@ -70,7 +65,6 @@ public class ClientsUI extends JPanel {
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Status label
         statusLabel = new JLabel("Loading data...");
         statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         statusLabel.setForeground(accentColor);
@@ -80,20 +74,17 @@ public class ClientsUI extends JPanel {
 
         headerPanel.add(actionsPanel, BorderLayout.EAST);
 
-        // Create table model - Added "Friend" column
         String[] columns = {"Client ID", "Name", "Email", "Phone", "Address", "Type", "Friend"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false;
             }
         };
 
-        // Create table
         clientsTable = new JTable(tableModel);
         styleTable(clientsTable);
 
-        // Add scroll pane with styled border
         JScrollPane scrollPane = new JScrollPane(clientsTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(230, 230, 230), 1),
@@ -101,7 +92,6 @@ public class ClientsUI extends JPanel {
         ));
         scrollPane.setBackground(Color.WHITE);
 
-        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 15));
         buttonPanel.setOpaque(false);
 
@@ -113,16 +103,14 @@ public class ClientsUI extends JPanel {
         styleButton(newClientButton, Color.BLACK);
         newClientButton.addActionListener(e -> createNewClient());
 
-        // Add "Toggle Friend Status" button
         JButton toggleFriendButton = new JButton("Toggle Friend Status");
-        styleButton(toggleFriendButton, new Color(155, 89, 182)); // Purple color to distinguish it
+        styleButton(toggleFriendButton, new Color(155, 89, 182));
         toggleFriendButton.addActionListener(e -> toggleFriendStatus());
 
         buttonPanel.add(toggleFriendButton);
         buttonPanel.add(refreshButton);
         buttonPanel.add(newClientButton);
 
-        // Create card panel to wrap the table
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -130,7 +118,6 @@ public class ClientsUI extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Add a subtle header to the card
         JPanel cardHeader = new JPanel(new BorderLayout());
         cardHeader.setBackground(Color.WHITE);
         cardHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -143,16 +130,13 @@ public class ClientsUI extends JPanel {
 
         cardHeader.add(cardTitle, BorderLayout.WEST);
 
-        // Assemble the card
         cardPanel.add(cardHeader, BorderLayout.NORTH);
         cardPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to main panel
         add(headerPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add right-click context menu
         addTableContextMenu();
 
         loadClientsData();
@@ -170,7 +154,6 @@ public class ClientsUI extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Style table header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(245, 246, 250));
@@ -188,7 +171,6 @@ public class ClientsUI extends JPanel {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(
@@ -207,7 +189,6 @@ public class ClientsUI extends JPanel {
     private void addTableContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
 
-        // View details option
         JMenuItem viewItem = new JMenuItem("View Client Details");
         viewItem.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         viewItem.addActionListener(e -> {
@@ -220,7 +201,6 @@ public class ClientsUI extends JPanel {
             }
         });
 
-        // Edit client option
         JMenuItem editItem = new JMenuItem("Edit Client");
         editItem.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         editItem.addActionListener(e -> {
@@ -233,12 +213,10 @@ public class ClientsUI extends JPanel {
             }
         });
 
-        // Toggle friend status option
         JMenuItem toggleFriendItem = new JMenuItem("Toggle Friend Status");
         toggleFriendItem.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         toggleFriendItem.addActionListener(e -> toggleFriendStatus());
 
-        // Delete client option
         JMenuItem deleteItem = new JMenuItem("Delete Client");
         deleteItem.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         deleteItem.addActionListener(e -> {
@@ -274,7 +252,7 @@ public class ClientsUI extends JPanel {
                         Statement dataStmt = connection.createStatement();
                         ResultSet dataRs = dataStmt.executeQuery(dataQuery);
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
 
                         while (dataRs.next()) {
                             boolean isFriend = dataRs.getBoolean("isFriend");
@@ -339,7 +317,7 @@ public class ClientsUI extends JPanel {
 
                         ResultSet dataRs = pstmt.executeQuery();
 
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
 
                         while (dataRs.next()) {
                             boolean isFriend = dataRs.getBoolean("isFriend");
@@ -387,7 +365,7 @@ public class ClientsUI extends JPanel {
         int clientId = (Integer) clientsTable.getValueAt(selectedRow, 0);
         String name = (String) clientsTable.getValueAt(selectedRow, 1);
         String currentStatus = (String) clientsTable.getValueAt(selectedRow, 6);
-        boolean newFriendStatus = currentStatus.equals("No"); // Toggle the current status
+        boolean newFriendStatus = currentStatus.equals("No");
 
         try (Connection connection = myJDBC.getConnection()) {
             if (connection != null) {
@@ -398,10 +376,8 @@ public class ClientsUI extends JPanel {
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
-                    // Update the table model
                     tableModel.setValueAt(newFriendStatus ? "Yes" : "No", selectedRow, 6);
 
-                    // Display confirmation message
                     String statusMessage = newFriendStatus ?
                             name + " is now marked as a friend" :
                             name + " is no longer marked as a friend";
@@ -411,7 +387,6 @@ public class ClientsUI extends JPanel {
                             "Friend Status Updated",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    // Refresh the data to ensure consistency
                     loadClientsData();
                 }
             }
@@ -425,7 +400,6 @@ public class ClientsUI extends JPanel {
     }
 
     private void viewClientDetails(int clientId) {
-        // Create styled details panel
         JPanel detailsPanel = new JPanel();
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -445,7 +419,6 @@ public class ClientsUI extends JPanel {
                     addDetailRow(detailsPanel, "Address:", rs.getString("address"));
                     addDetailRow(detailsPanel, "Type:", rs.getString("type"));
 
-                    // Display the friend status with an icon
                     boolean isFriend = rs.getBoolean("isFriend");
                     String friendIcon = isFriend ? "✓" : "✗";
                     String friendStatus = isFriend ? "Yes " + friendIcon : "No " + friendIcon;
@@ -460,9 +433,9 @@ public class ClientsUI extends JPanel {
                     JLabel friendValueLabel = new JLabel(friendStatus);
                     friendValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
                     if (isFriend) {
-                        friendValueLabel.setForeground(new Color(46, 204, 113)); // Green for friends
+                        friendValueLabel.setForeground(new Color(46, 204, 113));
                     } else {
-                        friendValueLabel.setForeground(new Color(231, 76, 60)); // Red for non-friends
+                        friendValueLabel.setForeground(new Color(231, 76, 60));
                     }
 
                     friendRow.add(friendLabel, BorderLayout.WEST);
@@ -475,7 +448,6 @@ public class ClientsUI extends JPanel {
             e.printStackTrace();
         }
 
-        // Show details in a dialog
         JOptionPane.showMessageDialog(this, detailsPanel, "Client Details", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -497,7 +469,6 @@ public class ClientsUI extends JPanel {
     }
 
     private void deleteClient(int clientId, String clientName) {
-        // Create a styled confirmation dialog
         JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
         confirmPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -536,7 +507,6 @@ public class ClientsUI extends JPanel {
     }
 
     private void editClient(int clientId) {
-        // Fetch current client data
         String name = "";
         String email = "";
         String phone = "";
@@ -566,11 +536,9 @@ public class ClientsUI extends JPanel {
             return;
         }
 
-        // Create dialog for editing
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Client", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -590,42 +558,36 @@ public class ClientsUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Name field
         addFormField(formPanel, "Name:", gbc, 0);
         JTextField nameField = createStyledTextField();
         nameField.setText(name);
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(nameField, gbc);
 
-        // Email field
         addFormField(formPanel, "Email:", gbc, 1);
         JTextField emailField = createStyledTextField();
         emailField.setText(email);
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(emailField, gbc);
 
-        // Phone field
         addFormField(formPanel, "Phone:", gbc, 2);
         JTextField phoneField = createStyledTextField();
         phoneField.setText(phone);
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(phoneField, gbc);
 
-        // Address field
         addFormField(formPanel, "Address:", gbc, 3);
         JTextField addressField = createStyledTextField();
         addressField.setText(address);
         gbc.gridx = 1; gbc.gridy = 3;
         formPanel.add(addressField, gbc);
 
-        // Type field
         addFormField(formPanel, "Type:", gbc, 4);
         JTextField typeField = createStyledTextField();
         typeField.setText(type);
         gbc.gridx = 1; gbc.gridy = 4;
         formPanel.add(typeField, gbc);
 
-        // Friend status
         addFormField(formPanel, "Friend:", gbc, 5);
         JCheckBox friendCheckbox = new JCheckBox("Mark as a friend");
         friendCheckbox.setSelected(isFriend);
@@ -634,7 +596,6 @@ public class ClientsUI extends JPanel {
         gbc.gridx = 1; gbc.gridy = 5;
         formPanel.add(friendCheckbox, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -651,7 +612,6 @@ public class ClientsUI extends JPanel {
         final int finalClientId = clientId;
         saveButton.addActionListener(e -> {
             try {
-                // Get values from form
                 String updatedName = nameField.getText();
                 String updatedEmail = emailField.getText();
                 String updatedPhone = phoneField.getText();
@@ -659,7 +619,6 @@ public class ClientsUI extends JPanel {
                 String updatedType = typeField.getText();
                 boolean updatedFriend = friendCheckbox.isSelected();
 
-                // Validate input fields
                 if (updatedName.isEmpty() || updatedEmail.isEmpty() || updatedPhone.isEmpty()
                         || updatedAddress.isEmpty() || updatedType.isEmpty()) {
                     JOptionPane.showMessageDialog(dialog,
@@ -669,19 +628,17 @@ public class ClientsUI extends JPanel {
                     return;
                 }
 
-                // Update client in the database
                 updateClient(finalClientId, updatedName, updatedEmail, updatedPhone,
                         updatedAddress, updatedType, updatedFriend);
 
-                loadClientsData(); // Refresh the table data
+                loadClientsData();
 
-                // Show success message
                 JOptionPane.showMessageDialog(dialog,
                         "Client updated successfully!",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                dialog.dispose(); // Close the dialog after successful update
+                dialog.dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Error updating client: " + ex.getMessage(),
@@ -733,11 +690,9 @@ public class ClientsUI extends JPanel {
     }
 
     private void createNewClient() {
-        // Create dialog for new client input with improved styling
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Client", true);
         dialog.setLayout(new BorderLayout());
 
-        // Add dialog header
         JPanel dialogHeader = new JPanel(new BorderLayout());
         dialogHeader.setBackground(highlightColor);
         dialogHeader.setPreferredSize(new Dimension(dialogHeader.getWidth(), 60));
@@ -757,38 +712,31 @@ public class ClientsUI extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.weightx = 1.0;
 
-        // Create form fields with improved styling
-        // Name field
         addFormField(formPanel, "Name:", gbc, 0);
         JTextField nameField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 0;
         formPanel.add(nameField, gbc);
 
-        // Email field
         addFormField(formPanel, "Email:", gbc, 1);
         JTextField emailField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 1;
         formPanel.add(emailField, gbc);
 
-        // Phone field
         addFormField(formPanel, "Phone:", gbc, 2);
         JTextField phoneField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 2;
         formPanel.add(phoneField, gbc);
 
-        // Address field
         addFormField(formPanel, "Address:", gbc, 3);
         JTextField addressField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 3;
         formPanel.add(addressField, gbc);
 
-        // Type field
         addFormField(formPanel, "Type:", gbc, 4);
         JTextField typeField = createStyledTextField();
         gbc.gridx = 1; gbc.gridy = 4;
         formPanel.add(typeField, gbc);
 
-        // Friend status
         addFormField(formPanel, "Friend:", gbc, 5);
         JCheckBox friendCheckbox = new JCheckBox("Mark as a friend");
         friendCheckbox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -796,7 +744,6 @@ public class ClientsUI extends JPanel {
         gbc.gridx = 1; gbc.gridy = 5;
         formPanel.add(friendCheckbox, gbc);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -812,7 +759,6 @@ public class ClientsUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             try {
-                // Get values from form
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String phone = phoneField.getText();
@@ -820,7 +766,6 @@ public class ClientsUI extends JPanel {
                 String type = typeField.getText();
                 boolean isFriend = friendCheckbox.isSelected();
 
-                // Validate input fields
                 if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || type.isEmpty()) {
                     JOptionPane.showMessageDialog(dialog,
                             "Please fill in all required fields",
@@ -829,17 +774,15 @@ public class ClientsUI extends JPanel {
                     return;
                 }
 
-                // Insert new client into the database
                 insertNewClient(name, email, phone, address, type, isFriend);
-                loadClientsData(); // Refresh the table data
+                loadClientsData();
 
-                // Show success message with improved styling
                 JOptionPane.showMessageDialog(dialog,
                         "New client has been added successfully!",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                dialog.dispose(); // Close the dialog after successful insertion
+                dialog.dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Error adding new client: " + ex.getMessage(),
@@ -862,6 +805,7 @@ public class ClientsUI extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
     private void addFormField(JPanel panel, String labelText, GridBagConstraints gbc, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;

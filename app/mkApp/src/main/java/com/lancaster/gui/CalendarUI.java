@@ -23,7 +23,7 @@ import java.util.List;
 import BoxOfficeInterface.JDBC;
 
 public class CalendarUI extends JPanel {
-    // Modern color scheme
+
     private static final Color PRIMARY_COLOR = new Color(41, 128, 185);  // Soft blue
     private static final Color SECONDARY_COLOR = new Color(52, 152, 219); // Lighter blue
     private static final Color BACKGROUND_COLOR = new Color(248, 249, 250); // Light gray background
@@ -35,7 +35,7 @@ public class CalendarUI extends JPanel {
     private static final Color SELECTED_COLOR = new Color(174, 214, 241); // Light blue for selection
     private static final Color BORDER_COLOR = new Color(222, 226, 230); // Light gray for borders
 
-    // Modern fonts
+
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 22);
     private static final Font SUBTITLE_FONT = new Font("Segoe UI", Font.BOLD, 16);
     private static final Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
@@ -68,16 +68,16 @@ public class CalendarUI extends JPanel {
         selectedDate = LocalDate.now();
         eventsByDate = new HashMap<>();
 
-        // Create header panel
+
         JPanel headerPanel = createHeaderPanel();
 
-        // Card panel for different views
+
         cardLayout = new CardLayout();
         viewContainer = new JPanel(cardLayout);
         viewContainer.setBackground(BACKGROUND_COLOR);
         viewContainer.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        // Initialize views
+
         monthViewPanel = createMonthViewPanel();
         weekViewPanel = createWeekViewPanel();
         dayViewPanel = createDayViewPanel();
@@ -86,21 +86,21 @@ public class CalendarUI extends JPanel {
         viewContainer.add(weekViewPanel, "WEEK");
         viewContainer.add(dayViewPanel, "DAY");
 
-        // Add components to main panel
+
         add(headerPanel, BorderLayout.NORTH);
         add(viewContainer, BorderLayout.CENTER);
 
-        // Load events
+
         loadMarketingEvents();
         loadRoomAvailability();
     }
 
     private void loadRoomAvailability() {
         try {
-            // Create JDBC instance
+
             JDBC jdbc = new JDBC();
 
-            // Get dates for the currently displayed month/week
+
             LocalDate startDate;
             LocalDate endDate;
 
@@ -111,18 +111,16 @@ public class CalendarUI extends JPanel {
                 startDate = selectedDate.minusDays(selectedDate.getDayOfWeek().getValue() % 7);
                 endDate = startDate.plusDays(6);
             } else {
-                // For day view, just use selected date
+
                 startDate = selectedDate;
                 endDate = selectedDate;
             }
 
-            // Clear previous room availability data
-            // We'll identify room availability events by type "AVAILABILITY"
+
             eventsByDate.forEach((date, events) -> {
                 events.removeIf(event -> "AVAILABILITY".equals(event.get("type")));
             });
 
-            // Process each date in the range
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                 java.sql.Date sqlDate = java.sql.Date.valueOf(date);
                 List<String> roomAvailabilities = jdbc.getCalendarAvailability(sqlDate);
@@ -130,33 +128,32 @@ public class CalendarUI extends JPanel {
                 System.out.println("Loading availability for: " + date);
                 System.out.println("Found " + roomAvailabilities.size() + " availability records");
 
-                // Process each availability record
                 for (String availabilityStr : roomAvailabilities) {
                     System.out.println("Raw availability data: " + availabilityStr);
 
                     try {
-                        // Handle format like "SlotTime: 08:00:00"
+
                         if (availabilityStr.startsWith("SlotTime:")) {
                             String timeStr = availabilityStr.substring("SlotTime:".length()).trim();
 
-                            // Create a generic room availability event
+
                             LocalDateTime startDateTime = date.atTime(
                                     Integer.parseInt(timeStr.substring(0, 2)),
                                     Integer.parseInt(timeStr.substring(3, 5)),
                                     Integer.parseInt(timeStr.substring(6, 8))
                             );
 
-                            // Create an end time 1 hour later
+
                             LocalDateTime endDateTime = startDateTime.plusHours(1);
 
-                            // Create timestamps
+
                             Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
                             Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
 
-                            // Calculate duration in minutes
-                            long durationMinutes = 60; // 1 hour
 
-                            // Create an event map for available slot
+                            long durationMinutes = 60;
+
+
                             Map<String, Object> event = new HashMap<>();
                             event.put("type", "AVAILABILITY");
                             event.put("room", 1); // Generic room ID
@@ -167,14 +164,13 @@ public class CalendarUI extends JPanel {
                             event.put("endDate", endTimestamp);
                             event.put("description", "Available time slot: " + timeStr);
 
-                            // Add to the eventsByDate map
+
                             eventsByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(event);
                             System.out.println("Added time slot availability for " + date + " at " + timeStr);
                         }
-                        // Handle the pipe-delimited format if it exists
+
                         else if (availabilityStr.contains("|")) {
-                            // Parse the pipe-delimited string
-                            // Format: "Room ID|Room Name|Venue|Start Time|End Time|Event Name"
+
                             String[] parts = availabilityStr.split("\\|");
 
                             if (parts.length >= 6) {
@@ -188,7 +184,7 @@ public class CalendarUI extends JPanel {
                                 System.out.println("Parsing: Room " + roomId + ", " + roomName + ", " +
                                         venue + ", " + startTimeStr + "-" + endTimeStr + ", " + eventType);
 
-                                // Convert time strings to Timestamp objects
+
                                 LocalDateTime startDateTime = date.atTime(
                                         Integer.parseInt(startTimeStr.split(":")[0]),
                                         Integer.parseInt(startTimeStr.split(":")[1])
@@ -242,17 +238,17 @@ public class CalendarUI extends JPanel {
         headerPanel.setBackground(BACKGROUND_COLOR);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
-        // Title and navigation area (left side)
+
         JPanel titleNavPanel = new JPanel(new BorderLayout(15, 0));
         titleNavPanel.setOpaque(false);
 
-        // Title label
+
         headerLabel = new JLabel();
         headerLabel.setFont(TITLE_FONT);
         headerLabel.setForeground(HEADER_COLOR);
         updateHeaderLabel();
 
-        // Navigation buttons with material design style
+
         JPanel navButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         navButtonPanel.setOpaque(false);
 
@@ -284,11 +280,11 @@ public class CalendarUI extends JPanel {
         titleNavPanel.add(headerLabel, BorderLayout.CENTER);
         titleNavPanel.add(navButtonPanel, BorderLayout.EAST);
 
-        // View toggle buttons (right side)
+
         JPanel viewTogglePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         viewTogglePanel.setOpaque(false);
 
-        // Create tab-like view selection
+
         JPanel viewTabsPanel = new JPanel();
         viewTabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         viewTabsPanel.setOpaque(false);
@@ -297,7 +293,7 @@ public class CalendarUI extends JPanel {
         weekViewBtn = createTabButton("Week", false);
         dayViewBtn = createTabButton("Day", false);
 
-        // Add borders only between buttons for a connected look
+
         monthViewBtn.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 0, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(8, 15, 8, 15)
@@ -340,7 +336,7 @@ public class CalendarUI extends JPanel {
 
         viewTogglePanel.add(viewTabsPanel);
 
-        // Add components to the header panel
+
         headerPanel.add(titleNavPanel, BorderLayout.WEST);
         headerPanel.add(viewTogglePanel, BorderLayout.EAST);
 
@@ -348,7 +344,7 @@ public class CalendarUI extends JPanel {
     }
 
     private void setActiveTab(JButton activeButton) {
-        // Reset all buttons
+
         monthViewBtn.setBackground(Color.WHITE);
         monthViewBtn.setForeground(TEXT_COLOR);
         weekViewBtn.setBackground(Color.WHITE);
@@ -356,7 +352,7 @@ public class CalendarUI extends JPanel {
         dayViewBtn.setBackground(Color.WHITE);
         dayViewBtn.setForeground(TEXT_COLOR);
 
-        // Set active button
+
         activeButton.setBackground(PRIMARY_COLOR);
         activeButton.setForeground(Color.WHITE);
     }
@@ -480,7 +476,7 @@ public class CalendarUI extends JPanel {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
 
-        // Create day names header
+
         JPanel dayNamesPanel = new JPanel(new GridLayout(1, 7, 1, 0));
         dayNamesPanel.setBackground(PRIMARY_COLOR);
         String[] dayNames = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -495,30 +491,28 @@ public class CalendarUI extends JPanel {
         }
         panel.add(dayNamesPanel, BorderLayout.NORTH);
 
-        // Create calendar grid
+
         JPanel calendarGrid = new JPanel(new GridLayout(0, 7, 1, 1));
         calendarGrid.setBackground(BORDER_COLOR);
 
-        // Get first day of the month and total days
+
         LocalDate firstOfMonth = displayedYearMonth.atDay(1);
         int startIndex = firstOfMonth.getDayOfWeek().getValue() % 7;
         int totalDays = displayedYearMonth.lengthOfMonth();
 
-        // Add blank labels for days before the first day
+
         for (int i = 0; i < startIndex; i++) {
             JPanel emptyPanel = new JPanel();
-            emptyPanel.setBackground(new Color(245, 245, 245)); // Slightly different shade for empty days
+            emptyPanel.setBackground(new Color(245, 245, 245));
             calendarGrid.add(emptyPanel);
         }
 
-        // Add day panels with events
         for (int day = 1; day <= totalDays; day++) {
             LocalDate currentDay = displayedYearMonth.atDay(day);
             JPanel dayPanel = createDayPanel(currentDay);
             calendarGrid.add(dayPanel);
         }
 
-        // Fill remaining cells with blank labels if needed
         int totalCells = startIndex + totalDays;
         int remainingCells = (7 - (totalCells % 7)) % 7;
         for (int i = 0; i < remainingCells; i++) {
@@ -536,7 +530,7 @@ public class CalendarUI extends JPanel {
         dayPanel.setLayout(new BorderLayout());
         dayPanel.setBackground(Color.WHITE);
 
-        // Date number in top-right corner
+
         JPanel dateNumberPanel = new JPanel(new BorderLayout());
         dateNumberPanel.setOpaque(false);
         dateNumberPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
@@ -545,7 +539,7 @@ public class CalendarUI extends JPanel {
         dateLabel.setFont(REGULAR_FONT);
         dateLabel.setForeground(TEXT_COLOR);
 
-        // Create circular background for today's date
+
         if (date.equals(LocalDate.now())) {
             dateLabel.setOpaque(true);
             dateLabel.setBackground(PRIMARY_COLOR);
@@ -558,17 +552,16 @@ public class CalendarUI extends JPanel {
         dateNumberPanel.add(dateLabel, BorderLayout.NORTH);
         dayPanel.add(dateNumberPanel, BorderLayout.NORTH);
 
-        // Highlight today's date
+
         if (date.equals(LocalDate.now())) {
             dayPanel.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR, 1));
         }
 
-        // Highlight selected date
+
         if (date.equals(selectedDate)) {
             dayPanel.setBackground(SELECTED_COLOR);
         }
 
-        // Panel for events
         JPanel eventsPanel = new JPanel();
         eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
         eventsPanel.setBackground(dayPanel.getBackground());
@@ -577,7 +570,7 @@ public class CalendarUI extends JPanel {
         // Add events for this day
         List<Map<String, Object>> dayEvents = eventsByDate.get(date);
         if (dayEvents != null && !dayEvents.isEmpty()) {
-            int displayCount = Math.min(dayEvents.size(), 3); // Limit to 3 visible events
+            int displayCount = Math.min(dayEvents.size(), 3);
 
             for (int i = 0; i < displayCount; i++) {
                 Map<String, Object> event = dayEvents.get(i);
@@ -586,7 +579,7 @@ public class CalendarUI extends JPanel {
                 eventsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
             }
 
-            // Add "more" indicator if there are more events
+
             if (dayEvents.size() > 3) {
                 JLabel moreLabel = new JLabel("+" + (dayEvents.size() - 3) + " more");
                 moreLabel.setFont(SMALL_FONT);
@@ -597,7 +590,7 @@ public class CalendarUI extends JPanel {
 
         dayPanel.add(eventsPanel, BorderLayout.CENTER);
 
-        // Add hover effect and click listener
+
         dayPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -622,7 +615,7 @@ public class CalendarUI extends JPanel {
             public void mouseClicked(MouseEvent evt) {
                 selectedDate = date;
                 if (evt.getClickCount() == 2) {
-                    // Double click switches to day view
+
                     currentView = "DAY";
                     setActiveTab(dayViewBtn);
                     cardLayout.show(viewContainer, "DAY");
@@ -639,16 +632,14 @@ public class CalendarUI extends JPanel {
         indicator.setPreferredSize(new Dimension(10, 18));
         indicator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
 
-        // Get event type and determine display text
         String eventType = event.get("type").toString();
         String displayText;
 
         if ("AVAILABILITY".equals(eventType)) {
-            // For availability events, display "Available" and room name
+
             displayText = "Available: " + event.get("roomName");
-            eventType = "availability"; // For color lookup
-        } else {
-            // For regular events, just display the event type
+            eventType = "availability";         } else {
+
             displayText = "  " + eventType;
         }
 
@@ -656,16 +647,16 @@ public class CalendarUI extends JPanel {
         eventLabel.setFont(SMALL_FONT);
         eventLabel.setForeground(Color.WHITE);
 
-        // Create custom color based on event type for visual distinction
+
         Color eventColor = getEventColor(eventType);
 
         indicator.setBackground(eventColor);
         indicator.add(eventLabel, BorderLayout.WEST);
 
-        // Add subtle rounded corners
+
         indicator.setBorder(new LineBorder(eventColor, 1, true));
 
-        // Add more detailed tooltip based on event type
+
         if ("AVAILABILITY".equals(event.get("type"))) {
             indicator.setToolTipText("Available Room: " + event.get("roomName") + " | " +
                     event.get("venue") + " | Room ID: " + event.get("room"));
@@ -677,22 +668,22 @@ public class CalendarUI extends JPanel {
     }
 
     private Color getEventColor(String eventType) {
-        // Create different colors based on event type
+
         switch (eventType.toLowerCase()) {
             case "meeting":
-                return new Color(41, 128, 185); // Blue
+                return new Color(41, 128, 185);
             case "presentation":
-                return new Color(142, 68, 173); // Purple
+                return new Color(142, 68, 173);
             case "workshop":
-                return new Color(39, 174, 96); // Green
+                return new Color(39, 174, 96);
             case "conference":
-                return new Color(211, 84, 0); // Orange
+                return new Color(211, 84, 0);
             case "seminar":
-                return new Color(22, 160, 133); // Teal
+                return new Color(22, 160, 133);
             case "availability":
-                return new Color(52, 152, 219); // Light blue for availability
+                return new Color(52, 152, 219);
             default:
-                return ACCENT_COLOR; // Default green
+                return ACCENT_COLOR;
         }
     }
 
@@ -701,7 +692,7 @@ public class CalendarUI extends JPanel {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
 
-        // Create day headers
+
         JPanel dayHeadersPanel = new JPanel(new GridLayout(1, 7, 1, 0));
         dayHeadersPanel.setBackground(BORDER_COLOR);
         LocalDate startOfWeek = selectedDate.minusDays(selectedDate.getDayOfWeek().getValue() % 7);
@@ -711,20 +702,20 @@ public class CalendarUI extends JPanel {
             JPanel headerPanel = new JPanel(new BorderLayout());
             headerPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
 
-            // Different background for weekends
+
             if (i == 0 || i == 6) {
                 headerPanel.setBackground(new Color(243, 244, 246));
             } else {
                 headerPanel.setBackground(new Color(250, 251, 252));
             }
 
-            // Day of week
+
             JLabel dowLabel = new JLabel(day.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()));
             dowLabel.setHorizontalAlignment(SwingConstants.CENTER);
             dowLabel.setFont(SUBTITLE_FONT);
             dowLabel.setForeground(TEXT_COLOR);
 
-            // Day of month in a circular indicator if it's today
+
             JPanel dateContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
             dateContainer.setOpaque(false);
 
@@ -747,7 +738,6 @@ public class CalendarUI extends JPanel {
             headerPanel.add(dowLabel, BorderLayout.NORTH);
             headerPanel.add(dateContainer, BorderLayout.CENTER);
 
-            // Highlight today and selected day
             if (day.equals(LocalDate.now())) {
                 headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, PRIMARY_COLOR));
             }
@@ -782,7 +772,7 @@ public class CalendarUI extends JPanel {
                 public void mouseClicked(MouseEvent evt) {
                     selectedDate = clickDate;
                     if (evt.getClickCount() == 2) {
-                        // Double click switches to day view
+
                         currentView = "DAY";
                         setActiveTab(dayViewBtn);
                         cardLayout.show(viewContainer, "DAY");
@@ -815,32 +805,31 @@ public class CalendarUI extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         panel.setBackground(Color.WHITE);
 
-        // Highlight today's date
+
         if (date.equals(LocalDate.now())) {
             panel.setBorder(BorderFactory.createMatteBorder(0, 3, 0, 0, PRIMARY_COLOR));
         }
 
-        // Highlight selected date
         if (date.equals(selectedDate)) {
             panel.setBackground(SELECTED_COLOR);
         }
 
-        // Highlight weekends with a subtle background
+
         if (date.getDayOfWeek().getValue() % 7 == 0 || date.getDayOfWeek().getValue() % 7 == 6) {
             panel.setBackground(new Color(248, 248, 250));
         }
 
-        // Add events for this day
+
         List<Map<String, Object>> dayEvents = eventsByDate.get(date);
         if (dayEvents != null && !dayEvents.isEmpty()) {
             for (Map<String, Object> event : dayEvents) {
                 JPanel eventCard = createEventCard(event);
                 panel.add(eventCard);
-                panel.add(Box.createRigidArea(new Dimension(0, 5))); // Space between events
+                panel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
         }
 
-        // Make day panel clickable
+
         final LocalDate clickDate = date;
         panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -867,7 +856,7 @@ public class CalendarUI extends JPanel {
             public void mouseClicked(MouseEvent evt) {
                 selectedDate = clickDate;
                 if (evt.getClickCount() == 2) {
-                    // Double click switches to day view
+
                     currentView = "DAY";
                     setActiveTab(dayViewBtn);
                     cardLayout.show(viewContainer, "DAY");
@@ -893,7 +882,7 @@ public class CalendarUI extends JPanel {
 
         if ("AVAILABILITY".equals(eventType)) {
             displayTitle = "Available: " + event.get("roomName");
-            eventType = "availability"; // For color lookup
+            eventType = "availability";
         } else {
             displayTitle = eventType;
         }
@@ -906,24 +895,24 @@ public class CalendarUI extends JPanel {
         colorBar.setBackground(eventColor);
         card.add(colorBar, BorderLayout.WEST);
 
-        // Main content
+
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setOpaque(false);
 
-        // Event title
+
         JLabel titleLabel = new JLabel(displayTitle);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Event location
+
         JLabel locationLabel = new JLabel(event.get("venue") + ", Room " + event.get("room"));
         locationLabel.setFont(SMALL_FONT);
         locationLabel.setForeground(new Color(108, 117, 125));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Duration
+
         JLabel durationLabel = new JLabel(event.get("duration") + " min");
         durationLabel.setFont(SMALL_FONT);
         durationLabel.setForeground(new Color(108, 117, 125));
@@ -937,7 +926,7 @@ public class CalendarUI extends JPanel {
 
         card.add(contentPanel, BorderLayout.CENTER);
 
-        // Add hover effect
+
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -963,13 +952,13 @@ public class CalendarUI extends JPanel {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
 
-        // Create header for the day
+
         JPanel dayHeaderPanel = new JPanel(new BorderLayout());
         dayHeaderPanel.setBackground(new Color(250, 251, 252));
         dayHeaderPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR));
         dayHeaderPanel.add(new JLabel(selectedDate.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM d"))), BorderLayout.CENTER);
 
-        // Create all-day events section
+
         JPanel allDayPanel = new JPanel(new BorderLayout());
         allDayPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR));
         JLabel allDayLabel = new JLabel("ALL DAY");
@@ -978,7 +967,7 @@ public class CalendarUI extends JPanel {
         allDayLabel.setForeground(new Color(108, 117, 125));
         allDayPanel.add(allDayLabel, BorderLayout.NORTH);
 
-        // Create time slots panel (left side)
+
         JPanel timeSlotPanel = new JPanel(new GridLayout(24, 1));
         timeSlotPanel.setBackground(Color.WHITE);
         timeSlotPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
@@ -1003,10 +992,10 @@ public class CalendarUI extends JPanel {
         JPanel hourGrid = new JPanel(new GridLayout(24, 1));
         hourGrid.setBackground(Color.WHITE);
 
-        // Events mapped by hour (for simplicity)
+
         Map<Integer, List<Map<String, Object>>> eventsByHour = new HashMap<>();
 
-        // Distribute events to hours
+
         List<Map<String, Object>> dayEvents = eventsByDate.get(selectedDate);
         if (dayEvents != null && !dayEvents.isEmpty()) {
             for (Map<String, Object> event : dayEvents) {
@@ -1018,12 +1007,12 @@ public class CalendarUI extends JPanel {
             }
         }
 
-        // Create hour panels with events
+
         for (int hour = 0; hour < 24; hour++) {
             JPanel hourPanel = new JPanel(new BorderLayout());
             hourPanel.setBackground(Color.WHITE);
             hourPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR));
-            hourPanel.setPreferredSize(new Dimension(0, 60)); // Fixed height for hour slots
+            hourPanel.setPreferredSize(new Dimension(0, 60));
 
             // Highlight current hour
             LocalDate now = LocalDate.now();
@@ -1031,7 +1020,7 @@ public class CalendarUI extends JPanel {
                 hourPanel.setBackground(new Color(255, 252, 235));
             }
 
-            // Add events for this hour
+
             JPanel eventsPanel = new JPanel();
             eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
             eventsPanel.setOpaque(false);
@@ -1042,7 +1031,7 @@ public class CalendarUI extends JPanel {
                 for (Map<String, Object> event : hourEvents) {
                     JPanel eventBlock = createDayViewEventBlock(event);
                     eventsPanel.add(eventBlock);
-                    eventsPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Space between blocks
+                    eventsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 }
             }
 
@@ -1059,9 +1048,9 @@ public class CalendarUI extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(dayViewContent);
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(20); // Smoother scrolling
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
-        // Combine components
+
         JPanel headerSection = new JPanel(new BorderLayout());
         headerSection.add(dayHeaderPanel, BorderLayout.NORTH);
         headerSection.add(allDayPanel, BorderLayout.CENTER);
@@ -1069,10 +1058,10 @@ public class CalendarUI extends JPanel {
         panel.add(headerSection, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Scroll to 8 AM by default
+
         SwingUtilities.invokeLater(() -> {
             JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-            verticalScrollBar.setValue(8 * 60); // Scroll to 8 AM position
+            verticalScrollBar.setValue(8 * 60);
         });
 
         return panel;
@@ -1084,7 +1073,7 @@ public class CalendarUI extends JPanel {
 
         if ("AVAILABILITY".equals(eventType)) {
             displayTitle = "Available: " + event.get("roomName");
-            eventType = "availability"; // For color lookup
+            eventType = "availability";
         } else {
             displayTitle = eventType;
         }
@@ -1100,12 +1089,12 @@ public class CalendarUI extends JPanel {
         ));
         block.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
-        // Event title
+
         JLabel titleLabel = new JLabel(displayTitle);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
         titleLabel.setForeground(TEXT_COLOR);
 
-        // Event details
+
         JPanel detailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         detailsPanel.setOpaque(false);
 
@@ -1197,25 +1186,24 @@ public class CalendarUI extends JPanel {
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel, BorderLayout.CENTER);
 
-        // Details panel
         JPanel detailsPanel = new JPanel();
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         detailsPanel.setBackground(Color.WHITE);
 
-        // Create detail rows
+
         addDetailRow(detailsPanel, "Venue:", event.get("venue").toString());
         addDetailRow(detailsPanel, "Room:", event.get("room").toString());
         addDetailRow(detailsPanel, "Duration:", event.get("duration") + " minutes");
         addDetailRow(detailsPanel, "Start Date:", formatTimestamp((Timestamp)event.get("startDate")));
         addDetailRow(detailsPanel, "End Date:", formatTimestamp((Timestamp)event.get("endDate")));
 
-        // Add description if available (for availability events)
+
         if (event.containsKey("description")) {
             addDetailRow(detailsPanel, "Description:", event.get("description").toString());
         }
 
-        // Buttons panel
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 20));
@@ -1232,7 +1220,7 @@ public class CalendarUI extends JPanel {
 
         buttonPanel.add(closeButton);
 
-        // Add components to dialog
+
         detailsDialog.add(headerPanel, BorderLayout.NORTH);
         detailsDialog.add(detailsPanel, BorderLayout.CENTER);
         detailsDialog.add(buttonPanel, BorderLayout.SOUTH);
@@ -1303,7 +1291,7 @@ public class CalendarUI extends JPanel {
     private void refreshViews() {
         updateHeaderLabel();
         loadMarketingEvents();
-        loadRoomAvailability(); // Add this line to load room availabilities
+        loadRoomAvailability();
 
         remove(viewContainer);
         monthViewPanel = createMonthViewPanel();
