@@ -26,6 +26,7 @@ public class HomeUI extends JFrame {
     private FriendsUI friendsUI;
     private FilmsUI filmsUI;
     private FilmShowsUI filmShowsUI;
+    private RoomAvailabilityUI roomAvailabilityUI;
     private CalendarUI calendarUI;
     private SettingsUI settingsUI;
     private heldSeatsUI heldSeatsUI; // Added HeldSeatsUI reference
@@ -41,6 +42,7 @@ public class HomeUI extends JFrame {
     // Navigation items - flat list without categories (added "Held Seats")
     private final String[] NAV_ITEMS = {
             "Dashboard",
+            "Room Availability",
             "Tour Bookings",
             "Meeting Bookings",
             "Film Shows",
@@ -79,7 +81,8 @@ public class HomeUI extends JFrame {
         filmShowsUI = new FilmShowsUI();
         settingsUI = new SettingsUI();
         calendarUI = new CalendarUI();
-        heldSeatsUI = new heldSeatsUI(); // Initialize the HeldSeatsUI
+        heldSeatsUI = new heldSeatsUI();
+        roomAvailabilityUI = new RoomAvailabilityUI();
         dashboardPanel = createDashboardPanel();
 
         // Add dashboard panel to content by default
@@ -237,7 +240,9 @@ public class HomeUI extends JFrame {
             case "Dashboard":
                 contentPanel.add(dashboardPanel, BorderLayout.CENTER);
                 break;
-
+            case "Room Availability":
+                contentPanel.add(roomAvailabilityUI, BorderLayout.CENTER);
+                break;
             case "Films":
                 contentPanel.add(filmsUI, BorderLayout.CENTER);
                 break;
