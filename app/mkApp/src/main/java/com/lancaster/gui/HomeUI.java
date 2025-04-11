@@ -18,7 +18,7 @@ import java.sql.ResultSet;
 
 
 public class HomeUI extends JFrame {
-
+    
     private JPanel mainPanel;
     private JLabel statusLabel;
     private JPanel contentPanel;
@@ -54,7 +54,7 @@ public class HomeUI extends JFrame {
             "Clients",
             "Settings"
     };
-
+    
     /**
      * Constructor for the HomeUI
      */
@@ -63,8 +63,8 @@ public class HomeUI extends JFrame {
         setTitle("Lancaster Marketing");
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
+        setLocationRelativeTo(null); 
+        
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
@@ -87,10 +87,10 @@ public class HomeUI extends JFrame {
 
 
         contentPanel.add(dashboardPanel, BorderLayout.CENTER);
-
-
+        
+        
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-
+        
         add(mainPanel);
 
         connectToDatabase();
@@ -185,7 +185,7 @@ public class HomeUI extends JFrame {
         button.setMaximumSize(new Dimension(220, 40));
         button.setPreferredSize(new Dimension(220, 40));
         button.setBackground(primaryColor);
-        button.setForeground(Color.LIGHT_GRAY);
+            button.setForeground(Color.LIGHT_GRAY);
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
